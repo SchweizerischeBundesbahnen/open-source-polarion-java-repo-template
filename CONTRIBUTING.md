@@ -1,7 +1,7 @@
 # Contributing
-> **Note:** This is a template for Contributing.md. Please make necessary changes in the links and content and modify the template as per your needs. 
+> **Note:** This is a template for Contributing.md. Please make necessary changes in the links and content and modify the template as per your needs.
 
-We appreciate all kinds of contributions. The following is a set of guidelines for contributing to this repository on GitHub. 
+We appreciate all kinds of contributions. The following is a set of guidelines for contributing to this repository on GitHub.
 These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
 #### Table Of Contents
@@ -25,7 +25,7 @@ These are mostly guidelines, not rules. Use your best judgment, and feel free to
 <a id="code-of-conduct"></a>
 ## Code of Conduct
 
-This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md). 
+This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code.
 
 <a id="i-just-have-a-question"></a>
@@ -70,7 +70,7 @@ Providing the following information will increase the
 chances of your issue being dealt with quickly:
 
 * **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
-* **Toolchain and Environment Details** - which versions of libraries, toolchain, platform etc 
+* **Toolchain and Environment Details** - which versions of libraries, toolchain, platform etc
 * **Motivation for or Use Case** - explain what are you trying to do and why the current behavior
   is a bug for you
 * **Browsers and Operating System** - is this a problem with all browsers?
@@ -125,7 +125,7 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 ## <a id="commit"></a> Commit Message Guidelines
 
 This project uses [Conventional Commits](https://www.conventionalcommits.org/) to generate the changelog.
-As an example, please refer to: https://github.com/sbb-design-systems/sbb-angular 
+As an example, please refer to: https://github.com/sbb-design-systems/sbb-angular
 
 <a id="your-first-code-contribution"></a>
 ## Your First Code Contribution
