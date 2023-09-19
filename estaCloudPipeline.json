@@ -1,0 +1,44 @@
+{
+  "$schema": "https://clew-resources.sbb-cloud.net/pipeline-schema.json",
+  "mainBranch": "master",
+  "estaDebug": true,
+  "advancedMode": false,
+  "versionIncrementPosition": "patch",
+  "jdkLabel": "OpenJDK 17 64-Bit",
+  "mvn": {
+    "mavenLabel": "Apache Maven 3.8",
+    "parentPom": "pom.xml",
+    "deployableArtifactsPom": "pom.xml",
+    "artifactoryMavenRepo": "polarion.mvn"
+  },
+  "stages": [
+  ],
+  "steps": [
+    {
+      "stepType": "continuous",
+      "isBuildEnabled": true,
+      "sonarScanEnabled": true,
+      "junitTestReportPath": "**/surefire-reports/*.xml",
+      "dependencyCheckEnabled": true,
+      "branchNamePrefixes": [
+        "feature"
+      ]
+    },
+    {
+      "stepType": "integrationBuild",
+      "isBuildEnabled": true,
+      "sonarScanEnabled": true,
+      "junitTestReportPath": "**/surefire-reports/*.xml",
+      "dependencyCheckEnabled": true,
+      "triggerBuildOnCommitEnabled": true
+    },
+    {
+      "stepType": "release",
+      "isBuildEnabled": true,
+      "sonarScanEnabled": true,
+      "junitTestReportPath": "**/surefire-reports/*.xml",
+      "dependencyCheckEnabled": true,
+      "triggerBuildOnCommitEnabled": false
+    }
+  ]
+}
