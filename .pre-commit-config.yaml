@@ -8,6 +8,8 @@ repos:
       - id: check-json
       - id: check-yaml
       - id: detect-private-key
+      - id: no-commit-to-branch
+      - id: mixed-line-ending
   - repo: https://github.com/zricethezav/gitleaks
     rev: v8.18.0
     hooks:
