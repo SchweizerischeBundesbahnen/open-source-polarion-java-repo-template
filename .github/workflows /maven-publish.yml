@@ -1,0 +1,52 @@
+name: Create package on push to main
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: 17
+          cache: 'maven'
+      - uses: whelk-io/maven-settings-xml-action@v20
+        with:
+          repositories: >
+            [
+              {
+                "id": "s3",
+                "name": "s3.sbb.polarion.maven.repo",
+                "url": "s3://sbb-polarion-maven-repo/polarion.mvn",
+                "releases": {
+                  "enabled": "true",
+                  "updatePolicy": "never"
+                },
+                "snapshots": {
+                  "enabled": "true",
+                  "updatePolicy": "always"
+                }
+              }
+            ]
+          servers: >
+            [
+              {
+                "id": "s3",
+                "username": "${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY }}",
+                "password": "${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY }}"
+              }
+            ]
+          active_profiles: >
+            [
+              "github"
+            ]
+      - run: cat /home/runner/.m2/settings.xml
+      - name: Build with Maven
+        run: mvn -B clean package 
+      - name: Deploy with Maven
+        run: mvn -B deploy
