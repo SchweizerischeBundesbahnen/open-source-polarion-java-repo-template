@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ch.sbb.polarion.extensions</groupId>
-    <artifactId>ch.sbb.polarion.extension.<<EXTENSION_NAME>></artifactId>
-    <version><<EXTENSION_VERSION>></version>
+    <artifactId>ch.sbb.polarion.extension.template</artifactId>
+    <version>0.0.0</version>
     <packaging>pom</packaging>
 
     <distributionManagement>
