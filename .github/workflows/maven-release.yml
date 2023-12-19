@@ -2,10 +2,13 @@
 name: maven-release
 on:
   push:
-    branches: [main]
+    branches: [main, feature/**, renovate/**]
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17 for deploy to S3 bucket
@@ -14,7 +17,7 @@ jobs:
           distribution: adopt
           java-version: 17
           cache: maven
-      - uses: whelk-io/maven-settings-xml-action@v20
+      - uses: whelk-io/maven-settings-xml-action@v21
         with:
           repositories: >
             [
@@ -45,7 +48,8 @@ jobs:
             [
               "github"
             ]
-      - run: cat /home/runner/.m2/settings.xml
+      - name: Print settings.xml
+        run: cat /home/runner/.m2/settings.xml
       - name: Build with Maven
         run: mvn --batch-mode clean package
       - name: Extract artefact version
@@ -53,7 +57,7 @@ jobs:
         run: echo ::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
       - name: Publish to S3 bucket
         if: ${{ !endsWith(steps.artefact_version.outputs.version, '-SNAPSHOT') }}
-        run: mvn --batch-mode deploy -Ps3Deploy
+        run: mvn --batch-mode deploy -Ps3Deploy       
       - name: Publish to GitHub Packages
         if: ${{ !endsWith(steps.artefact_version.outputs.version, '-SNAPSHOT') }}
         run: mvn --batch-mode deploy -PgithubDeploy
