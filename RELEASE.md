@@ -1,11 +1,11 @@
 
-**Guidelines for Releases**
+# Guidelines for Releases
 
-**Code Ownership and Automated Release Management**
+## Code Ownership and Automated Release Management
 
 Releases within our project are exclusively overseen by designated code owners, as outlined in the [/ .github / CODEOWNERS](/.github/CODEOWNERS) file. Our release process is automated using the Release Please GitHub action, which is configured in [/ .github / workflows / release-please.yml](/.github/workflows/release-please.yml).
 
-**Overview of the Workflow:**
+## Overview of the Workflow:
 
 1. For the initial release, the Release Please GitHub action generates a pull request entitled "chore(main): release 1.0.0", marking the commencement of version 1.0.0. This pull request necessitates approval as required.
     
