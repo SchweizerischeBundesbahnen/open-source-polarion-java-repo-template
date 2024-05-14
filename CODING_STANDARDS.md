@@ -41,7 +41,7 @@ This document outlines the coding standards and best practices to be followed wh
 Please refer to the following coding standards guidelines for detailed recommendations:
 
 1. [PEP 8](https://pep8.org/) - Python Enhancement Proposal 8 provides the de facto style guide for Python code, covering formatting, naming conventions, and more.
-   
+
 2. [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) - Google's Python style guide offers comprehensive guidelines on coding style, naming conventions, documentation, and more.
 
 ### Linters
