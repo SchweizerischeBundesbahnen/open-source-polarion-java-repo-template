@@ -56,6 +56,33 @@ We recommend using the following linters to enforce coding standards and best pr
 
 4. [mypy](http://mypy-lang.org/) - Mypy is a static type checker for Python that helps detect and prevent type-related errors using optional static typing.
 
+
+## Docker Best Practices and Guidelines
+
+This document outlines the best practices and guidelines to be followed when working with Docker for this project. Adhering to these practices ensures consistency, security, and efficiency in Dockerfile and container management.
+
+### Best Practices Guidelines
+
+Please refer to the following best practices guidelines for detailed recommendations:
+
+1. [Docker Official Best Practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/) - Docker's official documentation provides a comprehensive guide on best practices for writing Dockerfiles. It covers various aspects including image size optimization, layer caching, and security considerations.
+
+2. [Google Container Best Practices](https://cloud.google.com/solutions/best-practices-for-building-containers) - Google Cloud offers best practices for building and deploying containers, covering topics like image security, resource optimization, and container orchestration.
+
+3. [Red Hat Container Best Practices](https://www.redhat.com/en/topics/containers/container-best-practices) - Red Hat provides best practices for building and managing containers, focusing on security, performance, and scalability aspects.
+
+4. [Microsoft Dockerfile best practices](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/docker-application-development-process/docker-app-development-workflow) - Microsoft offers best practices for Dockerfile development, including multi-stage builds, image tagging, and Docker Compose usage.
+
+### Linters and Static Analysis Tools
+
+While Dockerfiles are not typically linted like source code, you can use static analysis tools to ensure adherence to best practices and detect potential issues:
+
+1. [Hadolint](https://github.com/hadolint/hadolint) - Hadolint is a Dockerfile linter that checks Dockerfiles for common mistakes and best practices violations. It provides suggestions for improving Dockerfile quality and security.
+
+2. [Docker Bench for Security](https://github.com/docker/docker-bench-security) - Docker Bench for Security is a script that checks for dozens of common best-practices around deploying Docker containers in production.
+
+3. [Trivy](https://github.com/aquasecurity/trivy) - Trivy is a vulnerability scanner for containers and other artifacts, providing detailed reports on security vulnerabilities in Docker images.
+
 ---
 
 This setup provides both the high-level guidelines for coding standards and best practices, as well as practical tools (linters) that can be used to enforce these standards in your project.
