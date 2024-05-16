@@ -26,6 +26,8 @@ This project and everyone participating in it are governed by our [Code of Condu
 ## <a id="prerequisites"></a>Prerequisites
 All contributors must have an active Polarion license. An active Polarion license means that the contributor has access to a valid Polarion license issued by Siemens, including but not limited to customer, partner, academic, trial, or demo Polarion license.
 
+Contributions must consist of original source code created by the contributor. Please do not submit code copied from other sources.
+
 ## <a id="asking-questions"></a>Asking questions
 Do not know how something in this project works? Curious if this project can achieve your desired functionality? Please ask questions in this project discussions [here](../../discussions)
 
