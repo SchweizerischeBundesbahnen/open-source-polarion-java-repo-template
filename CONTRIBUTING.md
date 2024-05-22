@@ -3,8 +3,6 @@ We appreciate all kinds of contributions. The following is a set of guidelines f
 These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
 ## Table Of Contents
-[Code of Conduct](#code-of-conduct)
-
 [Prerequisites](#prerequisites)
 
 [Asking Questions](#asking-questions)
@@ -14,19 +12,16 @@ These are mostly guidelines, not rules. Use your best judgment, and feel free to
 * [Design Decisions](#design-decisions)
 
 [How Can I Contribute?](#how-can-i-contribute)
-* [Commit Message Guidelines](#commit-message-guidelines)
 * [Reporting Bugs](#reporting-bugs)
 * [Suggesting Enhancements](#suggesting-enhancements)
 * [Submitting Changes](#submitting-changes)
+* [Commit Message Guidelines](#commit-message-guidelines)
 * [Coding Rules](#coding-rules)
 
-## <a id="code-of-conduct"></a>Code of Conduct
+## <a id="prerequisites"></a>Prerequisites
 This project and everyone participating in it are governed by our [Code of Conduct](https://github.com/SchweizerischeBundesbahnen/.github/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
-## <a id="prerequisites"></a>Prerequisites
 All contributors must have an active Polarion license. An active Polarion license means that the contributor has access to a valid Polarion license issued by Siemens, including but not limited to customer, partner, academic, trial, or demo Polarion license.
-
-Contributions must consist of original source code created by the contributor. Please do not submit code copied from other sources.
 
 ## <a id="asking-questions"></a>Asking questions
 Do not know how something in this project works? Curious if this project can achieve your desired functionality? Please ask questions in this project discussions [here](../../discussions)
@@ -42,10 +37,6 @@ The generic implementation for extensions provided by SBB Polarion Team is locat
 
 ## <a id="how-can-i-contribute"></a>How Can I Contribute?
 
-### <a id="commit-message-guidelines"></a>Commit Message Guidelines
-This project uses [Conventional Commits](https://www.conventionalcommits.org/) to generate the Changelog using the [Release Please GitHub action](.github/workflows/release-please.yml)
-For comprehensive information, please consult the [Release Please documentation](https://github.com/googleapis/release-please).
-
 ### <a id="reporting-bugs"></a>Reporting Bugs
 To report a bug, [submit an issue](../../issues/new) with the label `bug`. Please ensure the bug has not already been reported. **If the bug is a potential security vulnerability, please report it using our [security policy](https://github.com/SchweizerischeBundesbahnen/.github/blob/main/SECURITY.md).**
 
@@ -53,14 +44,12 @@ Providing the following information will increase the chances of your issue bein
 
 * **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
 * **Toolchain and Environment Details** - which versions of libraries, toolchain, platform etc
-* **Motivation for or Use Case** - explain what are you trying to do and why the current behavior
-  is a bug for you
+* **Motivation for or Use Case** - explain what are you trying to do and why the current behavior is a bug for you
 * **Browsers and Operating System** - is this a problem with all browsers?
 * **Reproduce the Error** - provide a live example or a unambiguous set of steps
 * **Screenshots** - maybe screenshots can help the team to triage issues far more quickly than a text description
 * **Related Issues** - has a similar issue been reported before?
-* **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
-  causing the problem (line of code or commit)
+* **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be causing the problem (line of code or commit)
 
 You can help the team even more by [submitting changes](#submitting-changes) with a fix.
 
@@ -90,10 +79,12 @@ Before you submit your Pull Request (PR) consider the following guidelines:
   is necessary because release notes are automatically generated from these messages.
 
      ```shell
-     git commit -a
+     git commit -a -S
      ```
-  Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
+  Note: The optional commit `-a` command line option will automatically "add" and "rm" edited files.
 
+  Note: The command line option `-S` generates a signed commit, which is required to make a contribution.
+  
 * Push your branch to GitHub:
 
     ```shell
@@ -102,6 +93,10 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 * In GitHub, send a pull request to `sbb-your-project:main`.
   The PR title and message should as well conform to the [commit message conventions](#commit-message-guidelines).
+
+### <a id="commit-message-guidelines"></a>Commit Message Guidelines
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) to generate the Changelog using the [Release Please GitHub action](.github/workflows/release-please.yml).
+For comprehensive information, please consult the [Release Please documentation](https://github.com/googleapis/release-please).
 
 ### <a id="coding-rules"></a>Coding Rules
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
