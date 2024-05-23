@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Before requesting: search [existing issues](../../labels/bug).
+        Before requesting: search [existing issues](../../../../labels/bug).
 
   - type: textarea
     attributes:
