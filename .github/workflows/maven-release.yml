@@ -40,6 +40,30 @@ jobs:
                 }
               }
             ]
+          profiles: >
+            [
+              {
+                "id": "s3Deploy",
+                "properties":
+                {
+                  "altDeploymentRepository": "s3::default::s3://sbb-polarion-maven-repo/polarion.mvn"
+                }
+              },
+              {
+                "id": "githubDeploy",
+                "properties":
+                {
+                  "altDeploymentRepository": "github::default::https://maven.pkg.github.com/SchweizerischeBundesbahnen/<REPOSITORY_NAME>"
+                }
+              },
+              {
+                "id": "repsyDeploy",
+                "properties":
+                {
+                  "altDeploymentRepository": "repsy::default::https://repo.repsy.io/mvn/sbb/polarion"
+                }
+              }
+            ]
           servers: >
             [
               {
@@ -58,17 +82,14 @@ jobs:
                 "password": "${{ secrets.CH_SBB_POLARION_REPSY_PASSWORD }}"
               }
             ]
-          active_profiles: >
-            [
-              "github"
-            ]
       - name: Print settings.xml
         run: cat /home/runner/.m2/settings.xml
       - name: Build with Maven
         run: mvn --batch-mode clean package
       - name: Extract artefact version
         id: artefact_version
-        run: echo ::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        run: echo ::set-output name=version::$(mvn help:evaluate -Dexpression=project.version
+          -q -DforceStdout)
       - name: Publish to S3 bucket
         if: ${{ !endsWith(steps.artefact_version.outputs.version, '-SNAPSHOT') }}
         run: mvn --batch-mode deploy -Ps3Deploy
