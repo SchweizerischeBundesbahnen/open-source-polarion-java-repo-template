@@ -53,7 +53,7 @@ jobs:
                 "id": "githubDeploy",
                 "properties":
                 {
-                  "altDeploymentRepository": "github::default::https://maven.pkg.github.com/SchweizerischeBundesbahnen/<REPOSITORY_NAME>"
+                  "altDeploymentRepository": "github::default::https://maven.pkg.github.com/SchweizerischeBundesbahnen/REPOSITORY_NAME"
                 }
               },
               {
