@@ -4,7 +4,8 @@
     "config:base",
     ":prNotPending",
     ":rebaseStalePrs",
-    ":semanticCommits"
+    ":semanticCommits",
+    ":enablePreCommit"
   ],
   "branchConcurrentLimit": 1,
   "packageRules": [
@@ -16,6 +17,14 @@
       "matchManagers": ["maven"],
       "matchDepTypes": ["provided", "runtime"],
       "enabled": false
+    },
+    {
+      "matchManagers": [
+        "pre-commit"
+      ],
+      "automerge": true,
+      "automergeType": "branch",
+      "ignoreTests": true
     }
   ]
 }
