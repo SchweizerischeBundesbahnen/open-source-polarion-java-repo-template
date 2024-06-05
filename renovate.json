@@ -11,7 +11,9 @@
     {
       "matchManagers": ["maven"],
       "registryUrls": [
-        "https://maven.pkg.github.com/SchweizerischeBundesbahnen/ch.sbb.polarion.extension.generic.parent-pom",
+        "https://maven.pkg.github.com/SchweizerischeBundesbahnen/ch.sbb.polarion.extensions.ch.sbb.polarion.extension.generic",
+        "https://maven.pkg.github.com/SchweizerischeBundesbahnen/ch.sbb.polarion.extensions.ch.sbb.polarion.extension.generic.app",
+        "https://maven.pkg.github.com/SchweizerischeBundesbahnen/ch.sbb.polarion.extensions.ch.sbb.polarion.extension.generic.parent-pom",
         "https://repo.maven.apache.org/maven2"
       ],
       "allowedVersions": "!/-jboss-|-redhat-|redhat-|-jenkins-|-patch-|-atlassian-|-NODEP$|-atlassian$|-jbossorg-|-SNAPSHOT$|-PFD-|-jbossas-|-does-not-exist|-tc$|-jahia1$/"
@@ -19,7 +21,9 @@
     {
       "matchManagers": ["maven"],
       "registryUrls": [
-        "https://maven.pkg.github.com/SchweizerischeBundesbahnen/ch.sbb.polarion.extension.generic.parent-pom",
+        "https://maven.pkg.github.com/SchweizerischeBundesbahnen/ch.sbb.polarion.extensions.ch.sbb.polarion.extension.generic",
+        "https://maven.pkg.github.com/SchweizerischeBundesbahnen/ch.sbb.polarion.extensions.ch.sbb.polarion.extension.generic.app",
+        "https://maven.pkg.github.com/SchweizerischeBundesbahnen/ch.sbb.polarion.extensions.ch.sbb.polarion.extension.generic.parent-pom",
         "https://repo.maven.apache.org/maven2"
       ],
       "matchDepTypes": ["provided", "runtime"],
