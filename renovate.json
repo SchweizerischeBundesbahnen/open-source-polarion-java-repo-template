@@ -1,9 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     ":prNotPending",
-    ":rebaseStalePrs",
     ":semanticCommits",
     ":enablePreCommit"
   ],
@@ -12,23 +11,20 @@
     {
       "matchManagers": ["maven"],
       "registryUrls": [
-        "https://maven.pkg.github.com/SchweizerischeBundesbahnen/*",
+        "https://maven.pkg.github.com/SchweizerischeBundesbahnen/*/",
         "https://repo.maven.apache.org/maven2"
       ],
       "allowedVersions": "!/-jboss-|-redhat-|redhat-|-jenkins-|-patch-|-atlassian-|-NODEP$|-atlassian$|-jbossorg-|-SNAPSHOT$|-PFD-|-jbossas-|-does-not-exist|-tc$|-jahia1$/"
     },
     {
       "matchManagers": ["maven"],
-      "matchDepTypes": ["provided", "runtime"],
-      "enabled": false
-    },
-    {
-      "matchManagers": [
-        "pre-commit"
+      "registryUrls": [
+        "https://maven.pkg.github.com/SchweizerischeBundesbahnen/*/",
+        "https://repo.maven.apache.org/maven2"
       ],
-      "automerge": true,
-      "automergeType": "branch",
-      "ignoreTests": true
+      "matchDepTypes": ["provided", "runtime"],
+      "excludePackagePatterns": ["sbb"],
+      "enabled": false
     }
   ]
 }
