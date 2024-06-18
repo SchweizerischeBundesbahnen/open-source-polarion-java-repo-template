@@ -1,4 +1,3 @@
 # These owners will be the default owners for everything in the repo.
 # Unless a later match takes precedence, global owners will be requested for review when someone opens a pull request.
-.pre-commit-config.yaml app/renovate-approve
 * @SchweizerischeBundesbahnen/SBB-CLEW-POLARION-ADMINS @SchweizerischeBundesbahnen/SBB-CLEW-POLARION-MAINTAINERS
