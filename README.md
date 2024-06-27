@@ -4,7 +4,7 @@ This Polarion extension provides possibility to <...>
 ## Build
 
 This extension can be produced using maven:
-```
+```bash
 mvn clean package
 ```
 
@@ -13,8 +13,8 @@ mvn clean package
 To install the extension to Polarion `ch.sbb.polarion.extension.<extension_name>-<version>.jar`
 should be copied to `<polarion_home>/polarion/extensions/ch.sbb.polarion.extension.<extension_name>/eclipse/plugins`
 It can be done manually or automated using maven build:
-```
-mvn clean install -P polarion2304,install-to-local-polarion
+```bash
+mvn clean install -P install-to-local-polarion
 ```
 For automated installation with maven env variable `POLARION_HOME` should be defined and point to folder where Polarion is installed.
 
