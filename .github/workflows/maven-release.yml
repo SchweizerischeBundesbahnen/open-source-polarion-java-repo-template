@@ -36,8 +36,8 @@ jobs:
             [
               {
                 "id": "s3",
-                "username": "${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY }}",
-                "password": "${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY }}"
+                "username": "${env.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY}",
+                "password": "${env.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY}"
               },
               {
                 "id": "github",
