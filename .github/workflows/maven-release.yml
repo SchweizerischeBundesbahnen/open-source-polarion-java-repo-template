@@ -9,6 +9,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY }}
+      S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4
       - name: Set up JDK and Maven
