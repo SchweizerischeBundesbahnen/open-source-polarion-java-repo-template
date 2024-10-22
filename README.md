@@ -33,4 +33,3 @@ Changes only take effect after restart of Polarion.
 ## Usage
 
 <...>
-
