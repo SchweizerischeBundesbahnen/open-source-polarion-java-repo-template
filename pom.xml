@@ -12,7 +12,7 @@
     <version>0.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>... extension of Polarion ALM</name>
+    <name>open-source-polarion-java-repo-template ... extension of Polarion ALM</name>
     <description>This is a Polarion extension which provides ...</description>
     <url>https://github.com/SchweizerischeBundesbahnen/ch.sbb.polarion.extension.extension-name</url>
 
