@@ -53,6 +53,18 @@ jobs:
       - name: 🔘 Generate settings.xml for Maven
         uses: whelk-io/maven-settings-xml-action@9dc09b23833fa9aa7f27b63db287951856f3433d  # v22
         with:
+          repositories: >
+            [
+              {
+                "id": "sbbnonprod-jfrog-io",
+                "name": "sbbnonprod.jfrog.io",
+                "url": "https://sbbnonprod.jfrog.io/polarion-mvn",
+                "releases": {
+                  "enabled": "true",
+                  "updatePolicy": "never"
+                }
+              }
+            ]
           servers: >
             [
               {
