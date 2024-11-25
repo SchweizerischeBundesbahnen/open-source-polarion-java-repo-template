@@ -58,7 +58,7 @@ jobs:
               {
                 "id": "sbbnonprod-jfrog-io",
                 "name": "sbbnonprod.jfrog.io",
-                "url": "https://sbbnonprod.jfrog.io/polarion-mvn",
+                "url": "https://sbbnonprod.jfrog.io/artifactory/polarion-mvn/",
                 "releases": {
                   "enabled": "true",
                   "updatePolicy": "never"
