@@ -38,7 +38,7 @@ jobs:
           oidc-provider-name: github-test
       - name: 🧱 Configure Maven for Artifactory
         run: |
-          jf mvn-config --repo-resolve=sbbnonprod-jfrog-io
+          jf mvn-config
       - name: 📝 Get the project version
         id: project_version
         run: echo "project_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
