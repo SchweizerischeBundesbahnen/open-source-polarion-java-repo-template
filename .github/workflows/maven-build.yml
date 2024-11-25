@@ -120,13 +120,16 @@ jobs:
           distribution: adopt
           java-version: 17
           gpg-private-key: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY }}
-      - name: 🧱 Set up Jfrog
+      - name: 🧱 Set up Jfrog CLI
         uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: https://sbbnonprod.jfrog.io
           JF_PROJECT: polarion
         with:
           oidc-provider-name: github-test
+      - name: 🧱 Configure Maven for Artifactory
+        run: |
+          jf mvn-config --repo-resolve=sbbnonprod-jfrog-io
       - name: 💾 Restore cache using cache key
         id: restore-cache
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4
