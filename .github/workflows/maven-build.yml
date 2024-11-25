@@ -36,6 +36,9 @@ jobs:
           JF_PROJECT: polarion
         with:
           oidc-provider-name: github-test
+      - name: 🧱 Configure Maven for Artifactory
+        run: |
+          jf mvn-config --repo-resolve=sbbnonprod-jfrog-io
       - name: 📝 Get the project version
         id: project_version
         run: echo "project_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
@@ -164,6 +167,9 @@ jobs:
           JF_PROJECT: polarion
         with:
           oidc-provider-name: github-test
+      - name: 🧱 Configure Maven for Artifactory
+        run: |
+          jf mvn-config --repo-resolve=sbbnonprod-jfrog-io
       - name: 💾 Restore cache using cache key
         id: restore-cache
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4
