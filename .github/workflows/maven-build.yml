@@ -34,12 +34,18 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: ${{ vars.JF_URL }}
-#          JF_PROJECT: polarion
+          JF_PROJECT: polarion
         with:
           oidc-provider-name: github-test
       - name: 🧱 Configure Maven for Artifactory
         run: |
           jf mvn-config  # --repo-resolve-releases=sbbnonprod-jfrog-io --repo-resolve-snapshots=sbbnonprod-jfrog-io
+          # JFrog CLI version
+          jf --version
+          # Ping the server
+          jf rt ping
+          # jf config
+          jf config show
       - name: 📝 Get the project version
         id: project_version
         run: echo "project_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
