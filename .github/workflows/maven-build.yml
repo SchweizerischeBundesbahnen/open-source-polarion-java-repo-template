@@ -37,6 +37,7 @@ jobs:
           JF_PROJECT: polarion
         with:
           oidc-provider-name: github-test
+          oidc-audience: sbb
       - name: 🧱 Configure Maven for Artifactory
         run: |
           jf mvn-config  # --repo-resolve-releases=sbbnonprod-jfrog-io --repo-resolve-snapshots=sbbnonprod-jfrog-io
@@ -169,6 +170,7 @@ jobs:
           JF_PROJECT: polarion
         with:
           oidc-provider-name: github-test
+          oidc-audience: sbb
       - name: 🧱 Configure Maven for Artifactory
         run: |
           jf mvn-config
