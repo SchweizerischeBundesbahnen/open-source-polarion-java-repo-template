@@ -72,19 +72,22 @@ jobs:
                 "releases": {
                   "enabled": "true",
                   "updatePolicy": "never"
-                },
-                "configuration": {
-                  "httpHeaders": {
-                    "property": {
-                      "name": "Authorization",
-                      "value": "Basic ${env.JF_ACCESS_TOKEN}"
-                    }
-                  }
                 }
               }
             ]
           servers: >
             [
+              {
+                "id": "sbbnonprod-jfrog-io",
+                "configuration": {
+                  "httpHeaders": [
+                    {
+                      "name": "Authorization",
+                      "value": "Bearer ${{ secrets.JF_ACCESS_TOKEN }}"
+                    }
+                  ]
+                }
+              },
               {
                 "id": "github",
                 "username": "${env.GITHUB_ACTOR}",
