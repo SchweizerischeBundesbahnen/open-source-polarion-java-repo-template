@@ -72,6 +72,14 @@ jobs:
                 "releases": {
                   "enabled": "true",
                   "updatePolicy": "never"
+                },
+                "configuration": {
+                  "httpHeaders": [
+                    {
+                      "name": "Authorization",
+                      "value": "Bearer ${env.JF_ACCESS_TOKEN}"
+                    }
+                  ]
                 }
               }
             ]
