@@ -35,7 +35,7 @@ jobs:
         env:
           JF_URL: ${{ vars.JF_URL }}
           JF_PROJECT: polarion
-          JF_ENV: oidc
+          JFROG_CLI_LOG_LEVEL: DEBUG
         with:
           oidc-provider-name: github-test
       - name: 🧱 Configure Maven for Artifactory
