@@ -74,12 +74,14 @@ jobs:
                   "updatePolicy": "never"
                 },
                 "configuration": {
-                  "httpHeaders": [
-                    {
-                      "name": "Authorization",
-                      "value": "Bearer ${env.JF_ACCESS_TOKEN}"
-                    }
-                  ]
+                  "httpHeaders": {
+                    "properties": [
+                      {
+                        "name": "Authorization",
+                        "value": "Bearer ${env.JF_ACCESS_TOKEN}"
+                      }
+                    ]
+                  }
                 }
               }
             ]
