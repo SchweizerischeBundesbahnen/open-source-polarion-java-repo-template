@@ -40,7 +40,7 @@ jobs:
           oidc-provider-name: github-test
       - name: 🧱 Configure Maven for Artifactory
         run: |
-          jf mvn-config --repo-resolve-releases=polarion-mvn --repo-resolve-snapshots=polarion-mvn
+          jf mvn-config --repo-resolve-releases=polarion-mvn-all --repo-resolve-snapshots=polarion-mvn-all
           # JFrog CLI version
           jf --version
           # Ping the server
@@ -64,13 +64,6 @@ jobs:
       - name: 🔘 Generate settings.xml for Maven
         uses: whelk-io/maven-settings-xml-action@9dc09b23833fa9aa7f27b63db287951856f3433d  # v22
         with:
-          repositories: >
-            [
-              {
-                "id": "central",
-                "url": "https://repo.maven.apache.org/maven2"
-              }
-            ]
           servers: >
             [
               {
