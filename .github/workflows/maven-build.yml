@@ -13,7 +13,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      JF_ACCESS_TOKEN: ${{ env.JF_ACCESS_TOKEN }}
       COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME }}
       COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN }}
       COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE }}
@@ -36,11 +35,12 @@ jobs:
         env:
           JF_URL: ${{ vars.JF_URL }}
           JF_PROJECT: polarion
+          JF_ENV: oidc
         with:
           oidc-provider-name: github-test
       - name: 🧱 Configure Maven for Artifactory
         run: |
-          jf mvn-config  # --repo-resolve-releases=sbbnonprod-jfrog-io --repo-resolve-snapshots=sbbnonprod-jfrog-io
+          jf mvn-config
           # JFrog CLI version
           jf --version
           # Ping the server
@@ -68,12 +68,7 @@ jobs:
             [
               {
                 "id": "sbbnonprod-jfrog-io",
-                "name": "sbbnonprod.jfrog.io",
-                "url": "https://sbbnonprod.jfrog.io/artifactory/polarion-mvn/",
-                "releases": {
-                  "enabled": "true",
-                  "updatePolicy": "never"
-                }
+                "url": "https://sbbnonprod.jfrog.io/artifactory/polarion-mvn/"
               }
             ]
           servers: >
