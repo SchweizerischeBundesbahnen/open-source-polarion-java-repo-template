@@ -83,7 +83,7 @@ jobs:
                   "httpHeaders": [
                     {
                       "name": "Authorization",
-                      "value": "Bearer ${{ secrets.JF_ACCESS_TOKEN }}"
+                      "value": "Bearer ${env.JF_ACCESS_TOKEN}"
                     }
                   ]
                 }
