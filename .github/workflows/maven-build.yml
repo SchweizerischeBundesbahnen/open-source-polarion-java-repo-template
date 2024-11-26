@@ -9,6 +9,7 @@ on:
 permissions:
   id-token: write  # for creating OIDC tokens
   contents: read
+  security-events: write
 jobs:
   build:
     runs-on: ubuntu-latest
