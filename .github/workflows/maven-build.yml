@@ -34,8 +34,8 @@ jobs:
       - name: 🧱 Set up Jfrog
         uses: jfrog/setup-jfrog-cli@v4
         env:
-          JF_URL: ${{ vars.JF_URL }}
-          JF_PROJECT: polarion
+          JF_URL: https://${{ vars.JF_URL }}/
+          JF_PROJECT: ${{ vars.JF_PROJECT_POLARION }}
           JFROG_CLI_LOG_LEVEL: DEBUG
         with:
           oidc-provider-name: github-test
@@ -93,8 +93,17 @@ jobs:
       - name: 📦 Build with Maven for PRs
         if: github.event_name == 'pull_request'
         run: jf mvn --batch-mode clean package  # sonar:sonar -Dsonar.pullrequest.base=${{ github.base_ref }} -Dsonar.pullrequest.branch=${{ github.head_ref }} -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
-      - name: Audit Dependencies
-        run: jf audit --mvn
+#      - name: Audit Dependencies
+#        run: jf audit --mvn
+      - uses: jfrog/frogbot@v2
+        with:
+          oidc-provider-name: github-test
+        env:
+          JFROG_CLI_LOG_LEVEL: DEBUG
+          JF_URL: https://${{ vars.JF_URL }}/
+          JF_PROJECT: ${{ vars.JF_PROJECT_POLARION }}
+          # The GitHub token automatically generated for the job
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       project_version: ${{ steps.project_version.outputs.project_version }}
       cache_key: ${{ steps.cache_key.outputs.cache_key }}
