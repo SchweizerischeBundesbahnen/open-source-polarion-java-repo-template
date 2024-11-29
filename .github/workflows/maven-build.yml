@@ -30,6 +30,7 @@ jobs:
         with:
           distribution: adopt
           java-version: 17
+          cache: maven
           gpg-private-key: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY }}
       - name: 🧱 Set up Jfrog
         uses: jfrog/setup-jfrog-cli@v4
