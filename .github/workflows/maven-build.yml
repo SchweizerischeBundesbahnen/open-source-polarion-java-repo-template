@@ -36,7 +36,7 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: https://${{ vars.JF_URL }}/
-          JF_PROJECT: ${{ vars.JF_PROJECT_POLARION }}
+          # JF_PROJECT: ${{ vars.JF_PROJECT_POLARION }}
           JFROG_CLI_LOG_LEVEL: DEBUG
         with:
           oidc-provider-name: github-test
