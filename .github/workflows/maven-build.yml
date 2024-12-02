@@ -102,7 +102,7 @@ jobs:
         env:
           JFROG_CLI_LOG_LEVEL: DEBUG
           JF_URL: https://${{ vars.JF_URL }}/
-          JF_PROJECT: ${{ vars.JF_PROJECT_POLARION }}
+          # JF_PROJECT: ${{ vars.JF_PROJECT_POLARION }}
           # The GitHub token automatically generated for the job
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
