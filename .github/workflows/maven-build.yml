@@ -132,11 +132,11 @@ jobs:
       - name: 📦 Deploy artifacts to Maven Central
         run: mvn --batch-mode -Dmaven.test.skip=true deploy -P gpg-sign -P nexus-staging -Dnexus-staging-maven-plugin.autoReleaseAfterClose=false
 
-  # Deploy release to GitHub Packages
+  # Deploy releases and snapshots for main branch to GitHub Packages
   deploy-github-packages:
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ !endsWith(needs.build.outputs.project_version, '-SNAPSHOT') && github.ref == 'refs/heads/main' }}
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
       packages: write
