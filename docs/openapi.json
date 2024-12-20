@@ -1,14 +1,114 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "open-source-polarion-java-repo-template",
+    "title": "extension-name REST API",
     "version": "v1"
   },
-  "paths": {},
-  "tags": [
-    {
-      "description": "Description",
-      "name": "Name"
+  "paths": {
+    "/api/context": {
+      "get": {
+        "operationId": "getContext",
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Context"
+                }
+              }
+            },
+            "description": "Context information"
+          }
+        },
+        "summary": "Returns basic context information of Polarion's extension",
+        "tags": [
+          "Extension Information"
+        ]
+      }
+    },
+    "/api/version": {
+      "get": {
+        "operationId": "getVersion",
+        "responses": {
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Version"
+                }
+              }
+            },
+            "description": "Version information"
+          }
+        },
+        "summary": "Returns version of Polarion's extension",
+        "tags": [
+          "Extension Information"
+        ]
+      }
     }
-  ]
+  },
+  "components": {
+    "schemas": {
+      "Context": {
+        "description": "Represents the context for building URLs related to Polarion services",
+        "properties": {
+          "baseUrl": {
+            "description": "Returns the base URL constructed with the extension context",
+            "example": "/polarion/pdf-exporter",
+            "type": "string"
+          },
+          "extensionContext": {
+            "description": "The extension context used as a base for URL construction",
+            "example": "pdf-exporter",
+            "type": "string"
+          },
+          "restUrl": {
+            "description": "Returns the REST API URL constructed with the extension context",
+            "example": "/polarion/pdf-exporter/rest",
+            "type": "string"
+          },
+          "swaggerUiUrl": {
+            "description": "Returns the Swagger UI URL for the REST API",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Version": {
+        "description": "Details about the software version",
+        "properties": {
+          "automaticModuleName": {
+            "description": "The automatic module name",
+            "type": "string"
+          },
+          "bundleBuildTimestamp": {
+            "description": "The build timestamp of the bundle",
+            "type": "string"
+          },
+          "bundleName": {
+            "description": "The name of the bundle",
+            "type": "string"
+          },
+          "bundleVendor": {
+            "description": "The vendor of the bundle",
+            "type": "string"
+          },
+          "bundleVersion": {
+            "description": "The version of the bundle",
+            "type": "string"
+          },
+          "projectURL": {
+            "description": "The project URL",
+            "type": "string"
+          },
+          "supportEmail": {
+            "description": "Support email for the bundle",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  }
 }
