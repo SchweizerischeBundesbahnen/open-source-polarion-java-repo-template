@@ -109,8 +109,8 @@
                         <package>ch.sbb.polarion.extension.generic.rest.controller.info</package>
 <!--                        <package>ch.sbb.polarion.extension.generic.rest.controller.settings</package>-->
                         <package>ch.sbb.polarion.extension.generic.rest.model</package>
-<!--                        <package>ch.sbb.polarion.extension.extension-name.rest.controller</package>-->
-<!--                        <package>ch.sbb.polarion.extension.extension-name.rest.model</package>-->
+                        <package>ch.sbb.polarion.extension.extension_name.rest.controller</package>
+<!--                        <package>ch.sbb.polarion.extension.extension_name.rest.model</package>-->
                     </resourcePackages>
                 </configuration>
             </plugin>
