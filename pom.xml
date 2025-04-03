@@ -5,7 +5,7 @@
     <parent>
         <groupId>ch.sbb.polarion.extensions</groupId>
         <artifactId>ch.sbb.polarion.extension.generic</artifactId>
-        <version>7.7.0</version>
+        <version>8.1.0</version>
     </parent>
 
     <artifactId>ch.sbb.polarion.extension.extension-name</artifactId>
@@ -98,6 +98,21 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <configuration>
+                    <outputFormat>JSON</outputFormat>
+                    <resourcePackages>
+                        <package>ch.sbb.polarion.extension.generic.rest.controller.info</package>
+<!--                        <package>ch.sbb.polarion.extension.generic.rest.controller.settings</package>-->
+                        <package>ch.sbb.polarion.extension.generic.rest.model</package>
+                        <package>ch.sbb.polarion.extension.extension_name.rest.controller</package>
+<!--                        <package>ch.sbb.polarion.extension.extension_name.rest.model</package>-->
+                    </resourcePackages>
+                </configuration>
             </plugin>
         </plugins>
     </build>
