@@ -3,21 +3,21 @@ name: PR checks
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened, unlocked]
-permissions:
-  contents: read
 jobs:
   check-conventional-commit:
-    name: Check commit messages
+    name: Check conventional commit compliance
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          # pick the pr HEAD instead of the merge commit
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55  # v5.5.0
+          persist-credentials: false
+      - name: Lint commit messages
+        uses: cocogitto/cocogitto-action@c7a74f5406bab86da17da0f0e460a69f8219a68c  # v3.11
         with:
-          python-version: 3.x
-      - run: pip install commitizen
-      - name: Check commit messages
-        run: cz check --rev-range origin/${GITHUB_BASE_REF}..
+          check: true
