@@ -1,5 +1,5 @@
 ---
-name: maven-build
+name: Build & Release
 on:
   push:
     branches: ['**']
@@ -26,7 +26,8 @@ jobs:
       - name: 📄 Checkout the repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          persist-credentials: false
       - name: 🧱 Set up JDK and Maven
         uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12  # v4.7.0
         with:
@@ -35,10 +36,10 @@ jobs:
           gpg-private-key: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY }}
       - name: 📝 Get the project version
         id: project_version
-        run: echo "project_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+        run: echo "project_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
       - name: 📝 Store cache key
         id: cache_key
-        run: echo "cache_key=${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}-${{ github.sha }}" >> $GITHUB_OUTPUT
+        run: echo "cache_key=${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}-${{ github.sha }}" >> "$GITHUB_OUTPUT"
       - name: 💾 Prepare cache using cache key
         id: prepare-cache
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
@@ -166,4 +167,4 @@ jobs:
       - name: 📦 Upload assets to GitHub Release
         if: ${{ !endsWith(needs.build.outputs.project_version, '-SNAPSHOT') }}
         run: |-
-          gh release upload v${{ needs.build.outputs.project_version }} target/*-${{ needs.build.outputs.project_version }}.jar
+          gh release upload "v${{ needs.build.outputs.project_version }}" target/*-"${{ needs.build.outputs.project_version }}".jar

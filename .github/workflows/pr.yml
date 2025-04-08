@@ -13,9 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
-          # pick the pr HEAD instead of the merge commit
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}  # Only checkout the PR's HEAD commit
+          fetch-depth: 1  # Limit to 1 commit (just the latest commit in the PR)
           persist-credentials: false
       - name: Lint commit messages
         uses: cocogitto/cocogitto-action@c7a74f5406bab86da17da0f0e460a69f8219a68c  # v3.11
