@@ -3,12 +3,14 @@ name: openapi-validate
 on:
   push:
   workflow_dispatch:
-  workflow_run:
-    workflows: [release-please]
-    types: [completed]
+# Set default permissions for all jobs
+permissions:
+  contents: read
 jobs:
   check-openapi-definition:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     name: Swagger Editor Validator Remote
     steps:
       - name: 📄 Checkout the repository

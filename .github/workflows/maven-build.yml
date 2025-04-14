@@ -7,12 +7,16 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
-  workflow_run:
-    workflows: [release-please]
-    types: [completed]
+# Set default permissions for all jobs
+permissions:
+  contents: read
+  packages: read
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     env:
       S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY }}
       S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY }}
@@ -111,6 +115,9 @@ jobs:
   deploy-maven-central:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     if: ${{ !endsWith(needs.build.outputs.project_version, '-SNAPSHOT') && github.ref == 'refs/heads/main' }}
     env:
       S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY }}
@@ -165,6 +172,8 @@ jobs:
       - name: 📦 Deploy artifacts to GitHub Packages
         run: mvn --batch-mode -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dmaven.source.skip=true deploy -P deploy-github-packages
       - name: 📦 Upload assets to GitHub Release
-        if: ${{ !endsWith(needs.build.outputs.project_version, '-SNAPSHOT') }}
+        env:
+          RELEASE_VERSION: ${{ needs.build.outputs.project_version }}
+        if: ${{ contains(env.RELEASE_VERSION, '^[0-9]+\\.[0-9]+\\.[0-9]+$') }}
         run: |-
-          gh release upload "v${{ needs.build.outputs.project_version }}" target/*-"${{ needs.build.outputs.project_version }}".jar
+          gh release upload "v${RELEASE_VERSION}" "target/*-${RELEASE_VERSION}.jar"
