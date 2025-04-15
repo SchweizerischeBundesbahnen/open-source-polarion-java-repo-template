@@ -4,11 +4,6 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-# Set default permissions for all jobs
-# permissions:
-#   contents: write
-#   pull-requests: write
-#   issues: write
 jobs:
   release-please:
     runs-on: ubuntu-latest
@@ -17,17 +12,9 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-#       - name: 📄 Checkout the repository
-#         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
-#         with:
-#           fetch-depth: 0
-#           persist-credentials: false
       - name: 🚀 release-please
         id: release
         uses: googleapis/release-please-action@a02a34c4d625f9be7cb89156071d8567266a2445  # v4.2.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release-type: maven
           target-branch: main
-          token: ${{ secrets.GITHUB_TOKEN }}
