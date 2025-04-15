@@ -18,13 +18,12 @@ jobs:
       contents: read
       packages: read
     env:
-      S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY }}
-      S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY }}
       COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME }}
       COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN }}
       COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE }}
       GITHUB_TOKEN: ${{ github.token }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SBB_JFROG_IO_TOKEN: ${{ secrets.SBB_JFROG_IO_POLARION_PROJECT }}
       MARKDOWN2HTML_MAVEN_PLUGIN_FAIL_ON_ERROR: true
     steps:
       - name: 📄 Checkout the repository
@@ -38,6 +37,14 @@ jobs:
           distribution: adopt
           java-version: 17
           gpg-private-key: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY }}
+      - name: 🧱 Set up Jfrog
+        uses: jfrog/setup-jfrog-cli@v4.5.6
+        env:
+          JF_URL: https://${{ vars.JF_URL }}
+          JFROG_CLI_LOG_LEVEL: DEBUG
+          JF_ACCESS_TOKEN: ${SBB_JFROG_IO_TOKEN}
+      - name: 🧱 Configure Maven for Artifactory
+        run: jf mvn-config --repo-resolve-releases=polarion.mvn --repo-resolve-snapshots=polarion.mvn
       - name: 📝 Get the project version
         id: project_version
         run: echo "project_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
@@ -55,25 +62,8 @@ jobs:
       - name: 🔘 Generate settings.xml for Maven
         uses: whelk-io/maven-settings-xml-action@9dc09b23833fa9aa7f27b63db287951856f3433d  # v22
         with:
-          repositories: >
-            [
-              {
-                "id": "s3",
-                "name": "s3.sbb.polarion.maven.repo",
-                "url": "s3://sbb-polarion-maven-repo/polarion.mvn",
-                "releases": {
-                  "enabled": "true",
-                  "updatePolicy": "never"
-                }
-              }
-            ]
           servers: >
             [
-              {
-                "id": "s3",
-                "username": "${env.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY}",
-                "password": "${env.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY}"
-              },
               {
                 "id": "github",
                 "username": "${env.GITHUB_ACTOR}",
@@ -126,8 +116,6 @@ jobs:
       packages: read
     if: ${{ !endsWith(needs.build.outputs.project_version, '-SNAPSHOT') && github.ref == 'refs/heads/main' }}
     env:
-      S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY }}
-      S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY }}
       COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME }}
       COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN }}
       COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE }}
@@ -158,8 +146,6 @@ jobs:
       contents: write
       packages: write
     env:
-      S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY }}
-      S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY }}
       GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: 🧱 Set up JDK and Maven
