@@ -7,6 +7,7 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
+# Set default permissions for all jobs
 permissions:
   id-token: write  # for creating OIDC tokens
   contents: read
@@ -39,7 +40,7 @@ jobs:
           cache: maven
           gpg-private-key: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY }}
       - name: 🧱 Set up Jfrog
-        uses: jfrog/setup-jfrog-cli@v4
+        uses: jfrog/setup-jfrog-cli@v4.5.6
         env:
           JF_URL: https://${{ vars.JF_URL }}/
           # JF_PROJECT: ${{ vars.JF_PROJECT_POLARION }}
@@ -96,7 +97,7 @@ jobs:
         run: cat /home/runner/.m2/settings.xml
       - name: 📦 Build with Maven for Pushes
         if: github.event_name == 'push'
-       env:
+        env:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
         run: mvn --batch-mode clean package  # sonar:sonar -Dsonar.branch.name="${GITHUB_HEAD_REF}"
       - name: 📦 Build with Maven for PRs
