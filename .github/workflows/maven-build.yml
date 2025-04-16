@@ -63,15 +63,19 @@ jobs:
                 "releases": {
                   "enabled": "true",
                   "updatePolicy": "never"
-                }
+                },
+                "configuration": {
+                  "httpHeaders": [
+                  {
+                    "name": "X-JFrog-Art-Api",
+                    "value": "${env.IO_JFROG_SBB_TOKEN}"
+                  }
+                ]
+              }
               }
             ]
           servers: >
             [
-              {
-                "id": "jfrog",
-                "password": "${env.IO_JFROG_SBB_TOKEN}"
-              },
               {
                 "id": "github",
                 "username": "${env.GITHUB_ACTOR}",
