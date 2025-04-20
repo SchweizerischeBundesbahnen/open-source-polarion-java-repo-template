@@ -45,8 +45,9 @@ jobs:
           JF_URL: ${{ vars.JF_URL }}
           JF_PROJECT: polarion
           JFROG_CLI_LOG_LEVEL: DEBUG
-        with:
-          oidc-provider-name: github-schweizerische-bundesbahnen
+          JF_ACCESS_TOKEN: ${{ secrets.SBB_JFROG_IO_POLARION_PROJECT }}
+#        with:
+#          oidc-provider-name: github-schweizerische-bundesbahnen
       - name: 🧱 Configure Maven for Artifactory
         run: |
           jf mvn-config --repo-resolve-releases=polarion-mvn --repo-resolve-snapshots=polarion-mvn
