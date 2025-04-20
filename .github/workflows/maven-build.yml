@@ -37,7 +37,7 @@ jobs:
           JF_ACCESS_TOKEN: ${{ secrets.SBB_JFROG_IO_POLARION_PROJECT }}
       - name: 🧱 Configure Maven for Artifactory
         run: |
-          jf mvn-config --repo-resolve-releases=polarion.mvn --repo-resolve-snapshots=polarion.mvn
+          jf mvn-config --repo-resolve-releases=polarion-mvn --repo-resolve-snapshots=polarion-mvn
           # JFrog CLI version
           jf --version
           # Ping the server
