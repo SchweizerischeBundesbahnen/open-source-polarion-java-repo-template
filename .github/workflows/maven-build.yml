@@ -70,11 +70,8 @@ jobs:
             [
               {
                 "id": "jfrog",
-                "configuration": {
-                  "httpHeaders": {
-                    "X-JFrog-Art-Api": "${env.IO_JFROG_SBB_TOKEN}"
-                  }
-                }
+                "username": "token",
+                "password": "${env.IO_JFROG_SBB_TOKEN}"
               },
               {
                 "id": "github",
