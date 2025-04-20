@@ -42,14 +42,20 @@ jobs:
       - name: 🔄 Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4.5.6
         env:
-          JF_URL: https://${{ vars.JF_URL }}
-          JFROG_CLI_LOG_LEVEL: DEBUG
+          JF_URL: ${{ vars.JF_URL }}
           JF_PROJECT: polarion
-          JF_ACCESS_TOKEN: ${{ secrets.SBB_JFROG_IO_POLARION_PROJECT }}
-#        with:
-#          oidc-provider-name: github-schweizerische-bundesbahnen
+          JFROG_CLI_LOG_LEVEL: DEBUG
+        with:
+          oidc-provider-name: github-schweizerische-bundesbahnen
       - name: 🧱 Configure Maven for Artifactory
-        run: jf mvn-config  # --repo-resolve-releases=polarion-mvn --repo-resolve-snapshots=polarion-mvn
+        run: |
+          jf mvn-config --repo-resolve-releases=polarion-mvn --repo-resolve-snapshots=polarion-mvn
+          # JFrog CLI version
+          jf --version
+          # Ping the server
+          jf rt ping
+          # jf config
+          jf config show
       - name: 📝 Get the project version
         id: project_version
         run: echo "project_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
@@ -67,31 +73,8 @@ jobs:
       - name: 🔘 Generate settings.xml for Maven
         uses: whelk-io/maven-settings-xml-action@9dc09b23833fa9aa7f27b63db287951856f3433d  # v22
         with:
-          repositories: >
-            [
-              {
-                "id": "sbb-jfrog-io",
-                "name": "sbb.jfrog.io",
-                "url": "https://sbb.jfrog.io/artifactory/polarion.mvn/",
-                "releases": {
-                  "enabled": "true",
-                  "updatePolicy": "never"
-                }
-              }
-            ]
           servers: >
             [
-              {
-                "id": "sbb-jfrog-io",
-                "configuration": {
-                  "httpHeaders": [
-                    {
-                      "name": "Authorization",
-                      "value": "Bearer ${env.JF_ACCESS_TOKEN}"
-                    }
-                  ]
-                }
-              },
               {
                 "id": "github",
                 "username": "${env.GITHUB_ACTOR}",
@@ -123,11 +106,11 @@ jobs:
         if: github.event_name == 'push'
         env:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
-        run: mvn --batch-mode clean package  # sonar:sonar -Dsonar.branch.name="${GITHUB_HEAD_REF}"
+        run: jf mvn --batch-mode clean package  # sonar:sonar -Dsonar.branch.name="${GITHUB_HEAD_REF}"
       - name: 📦 Build with Maven for PRs
         if: github.event_name == 'pull_request'
         env:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
           GITHUB_BASE_REF: ${{ github.base_ref }}
           GITHUB_PR_NUMBER_REF: ${{ github.event.pull_request.number }}
-        run: mvn --batch-mode clean package
+        run: jf mvn --batch-mode clean package
