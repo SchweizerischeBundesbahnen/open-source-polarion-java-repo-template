@@ -35,6 +35,15 @@ jobs:
         env:
           JF_URL: https://sbb.jfrog.io
           JF_ACCESS_TOKEN: ${{ secrets.SBB_JFROG_IO_POLARION_PROJECT }}
+      - name: 🧱 Configure Maven for Artifactory
+        run: |
+          jf mvn-config --repo-resolve-releases=polarion.mvn --repo-resolve-snapshots=polarion.mvn
+          # JFrog CLI version
+          jf --version
+          # Ping the server
+          jf rt ping
+          # jf config
+          jf config show
       - name: 🧱 Set up JDK and Maven
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4.7.1
         with:
