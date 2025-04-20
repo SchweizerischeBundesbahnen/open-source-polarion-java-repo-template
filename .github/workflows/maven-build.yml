@@ -44,12 +44,12 @@ jobs:
         env:
           JF_URL: https://${{ vars.JF_URL }}
           JFROG_CLI_LOG_LEVEL: DEBUG
+          JF_PROJECT: polarion
           JF_ACCESS_TOKEN: ${{ secrets.SBB_JFROG_IO_POLARION_PROJECT }}
 #        with:
 #          oidc-provider-name: github-schweizerische-bundesbahnen
       - name: 🧱 Configure Maven for Artifactory
-        run: |
-          jf mvn-config --repo-resolve-releases=polarion.mvn --repo-resolve-snapshots=polarion.mvn
+        run: jf mvn-config  # --repo-resolve-releases=polarion-mvn --repo-resolve-snapshots=polarion-mvn
       - name: 📝 Get the project version
         id: project_version
         run: echo "project_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
@@ -67,8 +67,31 @@ jobs:
       - name: 🔘 Generate settings.xml for Maven
         uses: whelk-io/maven-settings-xml-action@9dc09b23833fa9aa7f27b63db287951856f3433d  # v22
         with:
+          repositories: >
+            [
+              {
+                "id": "sbb-jfrog-io",
+                "name": "sbb.jfrog.io",
+                "url": "https://sbb.jfrog.io/artifactory/polarion.mvn/",
+                "releases": {
+                  "enabled": "true",
+                  "updatePolicy": "never"
+                }
+              }
+            ]
           servers: >
             [
+              {
+                "id": "sbb-jfrog-io",
+                "configuration": {
+                  "httpHeaders": [
+                    {
+                      "name": "Authorization",
+                      "value": "Bearer ${env.JF_ACCESS_TOKEN}"
+                    }
+                  ]
+                }
+              },
               {
                 "id": "github",
                 "username": "${env.GITHUB_ACTOR}",
@@ -107,4 +130,4 @@ jobs:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
           GITHUB_BASE_REF: ${{ github.base_ref }}
           GITHUB_PR_NUMBER_REF: ${{ github.event.pull_request.number }}
-        run: mvn --batch-mode clean package  # sonar:sonar -Dsonar.pullrequest.base="${GITHUB_HEAD_REF}" -Dsonar.pullrequest.branch="${GITHUB_BASE_REF}" -Dsonar.pullrequest.key="${GITHUB_PR_NUMBER_REF}"
+        run: mvn --batch-mode clean package
