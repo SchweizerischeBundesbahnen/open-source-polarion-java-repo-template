@@ -49,7 +49,7 @@ jobs:
 #          oidc-provider-name: github-schweizerische-bundesbahnen
       - name: 🧱 Configure Maven for Artifactory
         run: |
-          jf mvn-config --repo-resolve-releases=polarion-mvn --repo-resolve-snapshots=polarion-mvn
+          jf mvn-config --repo-resolve-releases=polarion.mvn --repo-resolve-snapshots=polarion.mvn
       - name: 📝 Get the project version
         id: project_version
         run: echo "project_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
