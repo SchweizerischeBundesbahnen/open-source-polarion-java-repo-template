@@ -31,6 +31,11 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+      - name: 🔄 Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: https://sbb.jfrog.io
+          JF_ACCESS_TOKEN: ${{ secrets.SBB_JFROG_IO_POLARION_PROJECT }}
       - name: 🧱 Set up JDK and Maven
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4.7.1
         with:
@@ -63,6 +68,10 @@ jobs:
                 "releases": {
                   "enabled": "true",
                   "updatePolicy": "never"
+                },
+                "snapshots": {
+                  "enabled": "true",
+                  "updatePolicy": "always"
                 }
               }
             ]
@@ -136,6 +145,11 @@ jobs:
           distribution: adopt
           java-version: 17
           gpg-private-key: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY }}
+      - name: 🔄 Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: https://sbb.jfrog.io
+          JF_ACCESS_TOKEN: ${{ secrets.SBB_JFROG_IO_POLARION_PROJECT }}
       - name: 💾 Restore cache using cache key
         id: restore-cache
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
@@ -164,6 +178,11 @@ jobs:
         with:
           distribution: adopt
           java-version: 17
+      - name: 🔄 Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: https://sbb.jfrog.io
+          JF_ACCESS_TOKEN: ${{ secrets.SBB_JFROG_IO_POLARION_PROJECT }}
       - name: 💾 Restore cache using cache key
         id: restore-cache
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
