@@ -20,9 +20,6 @@ jobs:
     env:
       S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY }}
       S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY }}
-      COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME }}
-      COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN }}
-      COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE }}
       GITHUB_TOKEN: ${{ github.token }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       MARKDOWN2HTML_MAVEN_PLUGIN_FAIL_ON_ERROR: true
@@ -55,15 +52,28 @@ jobs:
       - name: 🔘 Generate settings.xml for Maven
         uses: s4u/maven-settings-action@64e42c454dbd42ef6370ac8539685755aedd205b  # v3.1.0
         with:
-          repositories: >-
+          githubServer: false
+          activeProfiles: github,deploy-github-packages
+          profiles: >-
             [
               {
-                "id": "s3",
-                "name": "s3.sbb.polarion.maven.repo",
-                "url": "s3://sbb-polarion-maven-repo/polarion.mvn",
-                "releases": {
-                  "enabled": "true",
-                  "updatePolicy": "never"
+                "id": "github",
+                "repositories": [
+                  {
+                    "id": "s3",
+                    "name": "s3.sbb.polarion.maven.repo",
+                    "url": "s3://sbb-polarion-maven-repo/polarion.mvn",
+                    "releases": {
+                      "enabled": "true",
+                      "updatePolicy": "never"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "deploy-github-packages",
+                "properties": {
+                  "altDeploymentRepository": "github::default::https://maven.pkg.github.com/${{ github.repository }}"
                 }
               }
             ]
@@ -166,8 +176,7 @@ jobs:
             /home/runner/work
           key: ${{ needs.build.outputs.cache_key }}
       - name: 📦 Deploy artifacts to GitHub Packages
-        run: mvn --batch-mode -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }} -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dmaven.source.skip=true
-          deploy
+        run: mvn --batch-mode -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dmaven.source.skip=true deploy
       - name: 📦 Upload assets to GitHub Release
         env:
           RELEASE_VERSION: ${{ needs.build.outputs.project_version }}
