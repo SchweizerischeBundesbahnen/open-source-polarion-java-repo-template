@@ -89,16 +89,6 @@ jobs:
                 "passphrase": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE}"
               }
             ]
-          profiles: >-
-            [
-              {
-                "id": "deploy-github-packages",
-                "properties":
-                {
-                  "altDeploymentRepository": "github::default::https://maven.pkg.github.com/${{ github.repository }}"
-                }
-              }
-            ]
       - name: 🔘 Print settings.xml
         run: cat /home/runner/.m2/settings.xml
       - name: 📦 Build with Maven for Pushes
@@ -176,7 +166,8 @@ jobs:
             /home/runner/work
           key: ${{ needs.build.outputs.cache_key }}
       - name: 📦 Deploy artifacts to GitHub Packages
-        run: mvn --batch-mode -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dmaven.source.skip=true deploy -P deploy-github-packages
+        run: mvn --batch-mode -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }} -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dmaven.source.skip=true
+          deploy
       - name: 📦 Upload assets to GitHub Release
         env:
           RELEASE_VERSION: ${{ needs.build.outputs.project_version }}
