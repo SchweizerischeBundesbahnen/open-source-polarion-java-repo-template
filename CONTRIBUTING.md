@@ -14,11 +14,9 @@ These are mostly guidelines, not rules. Use your best judgment, and feel free to
 [How Can I Contribute?](#how-can-i-contribute)
 * [Reporting Bugs](#reporting-bugs)
 * [Suggesting Enhancements](#suggesting-enhancements)
-* [Submitting Changes](#submitting-changes)
+* [Submitting Changes](#submit-changes)
 * [Commit Message Guidelines](#commit-message-guidelines)
 * [Coding Rules](#coding-rules)
-
-[Development Guide](#development-guide)
 
 ## <a id="prerequisites"></a>Prerequisites
 This project and everyone participating in it are governed by our [Code of Conduct](https://github.com/SchweizerischeBundesbahnen/.github/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
@@ -108,6 +106,3 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 * All features or bug fixes **must be tested** by one or more specs (unit-tests).
 * All API methods **must be documented**.
 * Also see [CODING_STANDARDS.md](./CODING_STANDARDS.md)
-
-## <a id="development-guide"></a>Development Guide
-For detailed information about setting up your development environment, project structure, building, testing, and debugging the project, please refer to our comprehensive [Development Guide](./DEVELOPMENT.md).

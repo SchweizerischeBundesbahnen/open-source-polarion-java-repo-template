@@ -17,11 +17,11 @@ This document provides comprehensive development guidelines for contributing to 
 
 ### Prerequisites
 
-- Java JDK 11 or higher
-- Maven 3.6 or higher
+- Java JDK 17
+- Maven 3.9
 - IDE of your choice (IntelliJ IDEA, Eclipse, VS Code with Java extensions)
 - Git
-- Active Polarion license (as mentioned in CONTRIBUTING.md, all contributors must have an active Polarion license)
+- Active Polarion license (as mentioned in [CONTRIBUTING.md](./CONTRIBUTING.md), all contributors must have an active Polarion license)
 
 ### Setting Up Your Environment
 
@@ -143,7 +143,7 @@ This project depends on the generic SBB Polarion extension framework, which is l
 
 ### Recommended Tools
 
-As mentioned in CODING_STANDARDS.md, we recommend using the following tools:
+As mentioned in [CODING_STANDARDS.md](./CODING_STANDARDS.md), we recommend using the following tools:
 
 - Java code quality: Checkstyle, FindBugs/SpotBugs, PMD
 - For VS Code users, we recommend the extensions listed in `.vscode/extensions.json`
@@ -161,7 +161,7 @@ As mentioned in CODING_STANDARDS.md, we recommend using the following tools:
 1. Ensure your branch is up to date with `main`
 2. Make sure all tests pass
 3. Create a pull request targeting `main`
-4. Follow the commit message guidelines in CONTRIBUTING.md
+4. Follow the commit message guidelines in [CONTRIBUTING.md](./CONTRIBUTING.md)
 5. Ensure the PR description clearly describes the changes
 6. Wait for code review and approval
 
@@ -188,11 +188,11 @@ This project uses GitHub Actions for CI/CD, and SonarCloud for code quality anal
 
 ### Releasing
 
-As detailed in RELEASE.md, releases are managed through the Release Please GitHub action. The process is automated and handles version increments based on conventional commit messages.
+As detailed in [RELEASE.md](./RELEASE.md), releases are managed through the Release Please GitHub action. The process is automated and handles version increments based on conventional commit messages.
 
 ## Additional Resources
 
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Guidelines for contributing to the project
 - [CODING_STANDARDS.md](./CODING_STANDARDS.md) - Detailed coding standards
 - [RELEASE.md](./RELEASE.md) - Information about the release process
-- [Polarion Extension Documentation](https://docs.polarion.com/polarion/latest/help/index.jsp#developer_extensions/developer_extensions.html) - Official Polarion extension development documentation
+- [Polarion Extension Documentation](https://polarion.plm.automation.siemens.com/guides-and-manuals) - Official Polarion extension development documentation
