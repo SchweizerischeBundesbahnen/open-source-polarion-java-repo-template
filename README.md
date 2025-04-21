@@ -12,24 +12,24 @@
 # Polarion ALM extension to <...>
 
 This Polarion extension provides possibility to <...>
-## Build
 
-This extension can be produced using maven:
-```bash
-mvn clean package
+## Documentation
+
+- [Development Guide](./DEVELOPMENT.md) - Comprehensive guide for setting up development environment and contributing to this project
+- [Contributing Guidelines](./CONTRIBUTING.md) - Guidelines for contributing to this project
+- [Coding Standards](./CODING_STANDARDS.md) - Coding standards and best practices
+- [Release Process](./RELEASE.md) - Information about the release process
+
+## Installation
+
+To install this extension, copy the JAR file `ch.sbb.polarion.extension.<extension_name>-<version>.jar` to your Polarion installation directory at:
+```
+<polarion_home>/polarion/extensions/ch.sbb.polarion.extension.<extension_name>/eclipse/plugins
 ```
 
-## Installation to Polarion
+Restart Polarion for the changes to take effect.
 
-To install the extension to Polarion `ch.sbb.polarion.extension.<extension_name>-<version>.jar`
-should be copied to `<polarion_home>/polarion/extensions/ch.sbb.polarion.extension.<extension_name>/eclipse/plugins`
-It can be done manually or automated using maven build:
-```bash
-mvn clean install -P install-to-local-polarion
-```
-For automated installation with maven env variable `POLARION_HOME` should be defined and point to folder where Polarion is installed.
-
-Changes only take effect after restart of Polarion.
+> **Note:** For detailed build and installation instructions, including automated installation options, see the [Development Guide](./DEVELOPMENT.md#building-the-project).
 
 ## Polarion configuration
 

@@ -1,9 +1,10 @@
-
 # Guidelines for Releases
 
 ## Code Ownership and Automated Release Management
 
 Releases within our project are exclusively overseen by designated code owners, as outlined in the [/ .github / CODEOWNERS](/.github/CODEOWNERS) file. Our release process is automated using the Release Please GitHub action, which is configured in [/ .github / workflows / release-please.yml](/.github/workflows/release-please.yml).
+
+> **Note:** For comprehensive information about the development process, including setting up your environment and contributing to this project, please refer to our [Development Guide](./DEVELOPMENT.md).
 
 ## Overview of the Workflow:
 

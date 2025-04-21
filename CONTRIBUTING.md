@@ -18,6 +18,8 @@ These are mostly guidelines, not rules. Use your best judgment, and feel free to
 * [Commit Message Guidelines](#commit-message-guidelines)
 * [Coding Rules](#coding-rules)
 
+[Development Guide](#development-guide)
+
 ## <a id="prerequisites"></a>Prerequisites
 This project and everyone participating in it are governed by our [Code of Conduct](https://github.com/SchweizerischeBundesbahnen/.github/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
@@ -32,13 +34,15 @@ Do not know how something in this project works? Curious if this project can ach
 All extensions provided by SBB Polarion Team can be built, tested and packaged using Maven.
 It is only possible when the dependencies are extract from Polarion installer. The process must be performed by each contributor. Please consider to use https://github.com/SchweizerischeBundesbahnen/polarion-artifacts-deployer to extract the dependencies for your own Polarion installer version.
 
+For detailed information about setting up your development environment, please refer to the [Development Guide](./DEVELOPMENT.md).
+
 ### <a id="design-decisions"></a>Design Decisions
 The generic implementation for extensions provided by SBB Polarion Team is located in [ch.sbb.polarion.extension.generic](https://github.com/SchweizerischeBundesbahnen/ch.sbb.polarion.extension.generic)
 
 ## <a id="how-can-i-contribute"></a>How Can I Contribute?
 
 ### <a id="reporting-bugs"></a>Reporting Bugs
-To report a bug, [submit an issue](../../issues/new) with the label `bug`. Please ensure the bug has not already been reported. **If the bug is a potential security vulnerability, please report it using our [security policy](https://github.com/SchweizerischeBundesbahnen/.github/blob/main/SECURITY.md).**
+To report a bug, [submit an issue](../../issues/new) with the label `bug`. Please ensure the bug has not already been reported. **If the bug is a potential security vulnerability, please report it using our [security policy](https://github.com/SchweizerischeBundesbahnen/.github/blob/main/SECURITY.md).**
 
 Providing the following information will increase the chances of your issue being dealt with quickly:
 
@@ -54,7 +58,7 @@ Providing the following information will increase the chances of your issue bein
 You can help the team even more by [submitting changes](#submitting-changes) with a fix.
 
 ### <a id="suggesting-enhancements"></a>Suggesting Enhancements
-To suggest a feature or enhancement, please [submit an issue](../../issues/new) with the label `enhancement`. Please ensure the feature or enhancement has not already been suggested.
+To suggest a feature or enhancement, please [submit an issue](../../issues/new) with the label `enhancement`. Please ensure the feature or enhancement has not already been suggested.
 
 Please consider what kind of change it is:
 
@@ -104,3 +108,6 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 * All features or bug fixes **must be tested** by one or more specs (unit-tests).
 * All API methods **must be documented**.
 * Also see [CODING_STANDARDS.md](./CODING_STANDARDS.md)
+
+## <a id="development-guide"></a>Development Guide
+For detailed information about setting up your development environment, project structure, building, testing, and debugging the project, please refer to our comprehensive [Development Guide](./DEVELOPMENT.md).
