@@ -53,7 +53,7 @@ jobs:
             /home/runner/work
           key: ${{ steps.cache_key.outputs.cache_key }}
       - name: 🔘 Generate settings.xml for Maven
-        uses: s4u/maven-settings-action@61bdf12b86821b0e36b938ec2ed0895193bdf9c3  # v2.8.0
+        uses: s4u/maven-settings-action@64e42c454dbd42ef6370ac8539685755aedd205b  # v3.1.0
         with:
           servers: |
             [{
