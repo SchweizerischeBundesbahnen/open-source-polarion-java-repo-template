@@ -55,42 +55,50 @@ jobs:
       - name: 🔘 Generate settings.xml for Maven
         uses: s4u/maven-settings-action@64e42c454dbd42ef6370ac8539685755aedd205b  # v3.1.0
         with:
-          servers: |
-            [{
-              "id": "s3",
-              "username": "${S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY}",
-              "password": "${S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY}"
-            },
-            {
-              "id": "github",
-              "username": "${GITHUB_ACTOR}",
-              "password": "${GITHUB_TOKEN}"
-            },
-            {
-              "id": "ossrh",
-              "username": "${COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME}",
-              "password": "${COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN}"
-            },
-            {
-              "id": "gpg.passphrase",
-              "passphrase": "${COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE}"
-            }]
-          repositories: |
-            [{
-              "id": "s3",
-              "name": "s3.sbb.polarion.maven.repo",
-              "url": "s3://sbb-polarion-maven-repo/polarion.mvn",
-              "releases": {
-                "enabled": "true",
-                "updatePolicy": "never"
+          repositories: >-
+            [
+              {
+                "id": "s3",
+                "name": "s3.sbb.polarion.maven.repo",
+                "url": "s3://sbb-polarion-maven-repo/polarion.mvn",
+                "releases": {
+                  "enabled": "true",
+                  "updatePolicy": "never"
+                }
               }
-            }]
-          properties: |
-            [{
-              "deploy-github-packages": {
-                "altDeploymentRepository": "github::default::https://maven.pkg.github.com/${{ github.repository }}"
+            ]
+          servers: >-
+            [
+              {
+                "id": "s3",
+                "username": "${env.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY}",
+                "password": "${env.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY}"
+              },
+              {
+                "id": "github",
+                "username": "${env.GITHUB_ACTOR}",
+                "password": "${env.GITHUB_TOKEN}"
+              },
+              {
+                "id": "ossrh",
+                "username": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME}",
+                "password": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN}"
+              },
+              {
+                "id": "gpg.passphrase",
+                "passphrase": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE}"
               }
-            }]
+            ]
+          profiles: >-
+            [
+              {
+                "id": "deploy-github-packages",
+                "properties":
+                {
+                  "altDeploymentRepository": "github::default::https://maven.pkg.github.com/${{ github.repository }}"
+                }
+              }
+            ]
       - name: 🔘 Print settings.xml
         run: cat /home/runner/.m2/settings.xml
       - name: 📦 Build with Maven for Pushes
@@ -109,7 +117,6 @@ jobs:
       project_version: ${{ steps.project_version.outputs.project_version }}
       cache_key: ${{ steps.cache_key.outputs.cache_key }}
 
-  # ... rest of the file remains unchanged
   # Deploy release to Maven Central
   deploy-maven-central:
     needs: build
