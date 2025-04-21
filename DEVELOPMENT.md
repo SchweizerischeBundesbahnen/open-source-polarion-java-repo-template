@@ -1,6 +1,6 @@
 # Development Guide
 
-This document provides comprehensive development guidelines for contributing to this Polarion extension project. It consolidates key information from other documentation files and adds specific guidance for developers.
+This document provides comprehensive development guidelines for contributing to this Polarion extension project. It complements other documentation files and focuses specifically on technical setup and development workflows.
 
 ## Table of Contents
 
@@ -9,7 +9,6 @@ This document provides comprehensive development guidelines for contributing to 
 - [Building the Project](#building-the-project)
 - [Testing](#testing)
 - [Debugging](#debugging)
-- [Tools and Dependencies](#tools-and-dependencies)
 - [Development Workflow](#development-workflow)
 - [Common Development Tasks](#common-development-tasks)
 
@@ -135,19 +134,6 @@ For debugging the extension in a running Polarion instance:
 - Use the Polarion logging system for extension logs
 - Logs are available in `<polarion_home>/polarion/logs/main.log`
 
-## Tools and Dependencies
-
-### Required Dependencies
-
-This project depends on the generic SBB Polarion extension framework, which is located in [ch.sbb.polarion.extension.generic](https://github.com/SchweizerischeBundesbahnen/ch.sbb.polarion.extension.generic).
-
-### Recommended Tools
-
-As mentioned in [CODING_STANDARDS.md](./CODING_STANDARDS.md), we recommend using the following tools:
-
-- Java code quality: Checkstyle, FindBugs/SpotBugs, PMD
-- For VS Code users, we recommend the extensions listed in `.vscode/extensions.json`
-
 ## Development Workflow
 
 ### Branching Strategy
@@ -186,13 +172,9 @@ This project uses GitHub Actions for CI/CD, and SonarCloud for code quality anal
 3. Add a test that verifies the fix
 4. Submit a pull request
 
-### Releasing
+## Related Documentation
 
-As detailed in [RELEASE.md](./RELEASE.md), releases are managed through the Release Please GitHub action. The process is automated and handles version increments based on conventional commit messages.
-
-## Additional Resources
-
+- [README.md](./README.md) - Project overview and installation instructions
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Guidelines for contributing to the project
 - [CODING_STANDARDS.md](./CODING_STANDARDS.md) - Detailed coding standards
 - [RELEASE.md](./RELEASE.md) - Information about the release process
-- [Polarion Extension Documentation](https://polarion.plm.automation.siemens.com/guides-and-manuals) - Official Polarion extension development documentation
