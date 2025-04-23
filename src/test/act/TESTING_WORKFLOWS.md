@@ -4,9 +4,55 @@ This document provides guidance on how to test GitHub Actions workflows locally 
 
 ## Requirements
 
-- Docker (Rancher Desktop or Docker Desktop)
-- Act CLI tool (`brew install act`)
+- Docker (Rancher Desktop or Docker Desktop) or Podman
+- Act CLI tool (installation instructions below)
 - A local clone of the repository
+
+## Installation
+
+### Installing Act with Homebrew
+
+On macOS, the easiest way to install Act is using Homebrew:
+
+```bash
+# Install Homebrew if you don't have it already
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install Act
+brew install act
+```
+
+To verify the installation:
+
+```bash
+act --version
+```
+
+For other operating systems or alternative installation methods, visit the [Act GitHub Repository](https://github.com/nektos/act).
+
+### Installing Podman (Alternative to Docker)
+
+If you prefer to use Podman instead of Docker, you can install it on macOS using Homebrew:
+
+```bash
+# Install Podman
+brew install podman
+
+# Initialize Podman machine (only needed once)
+podman machine init
+
+# Start Podman machine
+podman machine start
+```
+
+To verify the installation:
+
+```bash
+podman --version
+podman info
+```
+
+For other operating systems or alternative installation methods, visit the [Podman Installation Guide](https://podman.io/getting-started/installation).
 
 ## Quick Start
 
@@ -16,10 +62,15 @@ The simplest way to test a workflow is to use the provided `testing_workflows.sh
 # Navigate to the repository root
 cd /path/to/repository
 
-# For Rancher Desktop with Docker (Moby) engine
+# Container runtime setup (choose ONE option only):
+# Option 1: For Rancher Desktop with Docker (Moby) engine
 export DOCKER_HOST=unix://$HOME/.rd/docker.sock
-# or forcing Act to use the Docker CLI directly
+
+# Option 2: Force Act to use the Docker CLI directly
 export ACT_CONTAINER_RUNTIME=docker
+
+# Option 3: Use Podman instead of Docker
+export ACT_CONTAINER_RUNTIME=podman
 
 # Run the script with default settings (tests maven-build.yml, build job)
 ./src/test/act/testing_workflows.sh
@@ -116,6 +167,8 @@ If using Rancher Desktop, make sure to specify the correct socket path:
 ```bash
 --container-daemon-socket $(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}')
 ```
+
+If using Podman instead of Docker, refer to the container runtime setup in the Quick Start section.
 
 ### Missing Secrets
 
