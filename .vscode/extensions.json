@@ -1,0 +1,23 @@
+{
+  "recommendations": [
+    "42Crunch.vscode-openapi",
+    "alefragnani.bookmarks",
+    "alefragnani.project-manager",
+    "bierner.markdown-preview-github-styles",
+    "davidanson.vscode-markdownlint",
+    "donjayamanne.githistory",
+    "eamodio.gitlens",
+    "github.vscode-github-actions",
+    "github.vscode-pull-request-github",
+    "redhat.vscode-xml",
+    "ryanluker.vscode-coverage-gutters",
+    "sanjulaganepola.github-local-actions",
+    "shengchen.vscode-checkstyle",
+    "SonarSource.sonarlint-vscode",
+    "streetsidesoftware.code-spell-checker",
+    "usernamehw.errorlens",
+    "vscjava.vscode-java-pack",
+    "xyz.local-history",
+    "yzhang.markdown-all-in-one"
+  ]
+}
