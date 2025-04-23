@@ -147,7 +147,7 @@ COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE=fake_gpg_passphrase
 
 ### Act Configuration File
 
-The `.actrc` file contains configuration for Act:
+The `src/test/act/.actrc` file contains configuration for Act:
 
 ```
 --container-architecture=linux/amd64

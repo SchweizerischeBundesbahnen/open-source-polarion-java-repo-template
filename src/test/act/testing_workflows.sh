@@ -9,7 +9,7 @@ set -e
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 DOCKER_SOCKET=$(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}')
 SECRETS_FILE="${REPO_ROOT}/src/test/act/secrets.env"
-ACT_CONFIG="${REPO_ROOT}/.actrc"
+ACT_CONFIG="${REPO_ROOT}/src/test/act/.actrc"
 
 # Default values
 WORKFLOW_FILE="${1:-.github/workflows/maven-build.yml}"
