@@ -59,9 +59,16 @@ NC='\033[0m' # No Color
 # Set container-specific variables
 if [[ "$ACT_CONTAINER_RUNTIME" == "docker" ]]; then
   DOCKER_SOCKET=$(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}' 2>/dev/null || echo "unix:///var/run/docker.sock")
+  CONTAINER_DAEMON_SOCK="$DOCKER_SOCKET"
   CONTAINER_ARGS="--container-daemon-socket \"$DOCKER_SOCKET\""
 else
-  CONTAINER_ARGS=""
+  # For Podman, we need to set the correct socket path
+  # Get the podman socket path
+  PODMAN_SOCKET=$(podman info --format '{{.Host.RemoteSocket.Path}}' 2>/dev/null || echo "unix:///run/podman/podman.sock")
+  CONTAINER_DAEMON_SOCK="$PODMAN_SOCKET"
+  CONTAINER_ARGS="--container-daemon-socket \"$PODMAN_SOCKET\""
+  # Make sure to set the environment variable for act
+  export DOCKER_HOST="$PODMAN_SOCKET"
 fi
 
 # Set trap to ensure cleanup happens even if script exits early
@@ -85,7 +92,9 @@ echo -e "Job: ${YELLOW}${JOB_NAME}${NC}"
 echo -e "Event: ${YELLOW}${EVENT_TYPE}${NC}"
 echo -e "Container Runtime: ${YELLOW}${ACT_CONTAINER_RUNTIME}${NC}"
 if [[ "$ACT_CONTAINER_RUNTIME" == "docker" ]]; then
-  echo -e "Docker socket: ${YELLOW}${DOCKER_SOCKET}${NC}"
+  echo -e "Docker socket: ${YELLOW}${CONTAINER_DAEMON_SOCK}${NC}"
+else
+  echo -e "Podman socket: ${YELLOW}${CONTAINER_DAEMON_SOCK}${NC}"
 fi
 echo -e "Secrets file: ${YELLOW}${SECRETS_FILE}${NC}"
 echo -e "Act config: ${YELLOW}${ACT_CONFIG}${NC}"
@@ -142,13 +151,8 @@ EOF
 fi
 
 # Build the act command based on container runtime
-if [[ "$ACT_CONTAINER_RUNTIME" == "docker" ]]; then
-  DRY_RUN_CMD="act -n \"$EVENT_TYPE\" -W \"$WORKFLOW_PATH\" -j \"$JOB_NAME\" --container-daemon-socket \"$DOCKER_SOCKET\" --secret-file \"$SECRETS_FILE\""
-  RUN_CMD="act \"$EVENT_TYPE\" -W \"$WORKFLOW_PATH\" -j \"$JOB_NAME\" --container-daemon-socket \"$DOCKER_SOCKET\" --secret-file \"$SECRETS_FILE\""
-else
-  DRY_RUN_CMD="act -n \"$EVENT_TYPE\" -W \"$WORKFLOW_PATH\" -j \"$JOB_NAME\" --secret-file \"$SECRETS_FILE\""
-  RUN_CMD="act \"$EVENT_TYPE\" -W \"$WORKFLOW_PATH\" -j \"$JOB_NAME\" --secret-file \"$SECRETS_FILE\""
-fi
+DRY_RUN_CMD="act -n \"$EVENT_TYPE\" -W \"$WORKFLOW_PATH\" -j \"$JOB_NAME\" $CONTAINER_ARGS --secret-file \"$SECRETS_FILE\""
+RUN_CMD="act \"$EVENT_TYPE\" -W \"$WORKFLOW_PATH\" -j \"$JOB_NAME\" $CONTAINER_ARGS --secret-file \"$SECRETS_FILE\""
 
 # Run dry-run first to check configuration
 echo -e "${YELLOW}Running dry-run to validate configuration...${NC}"

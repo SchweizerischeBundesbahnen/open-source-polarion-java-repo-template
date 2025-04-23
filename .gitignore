@@ -38,3 +38,6 @@ dependency-reduced-pom.xml
 
 src/main/resources/webapp/*-admin/html/about.html
 README.html
+
+# Environment and configuration files
+*.env
