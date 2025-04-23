@@ -1,10 +1,10 @@
 # Testing GitHub Actions Workflows Locally
 
-This document provides guidance on how to test GitHub Actions workflows locally using the `act` tool. The script supports both Podman and Docker, with Podman as the default container runtime.
+This document provides guidance on how to test GitHub Actions workflows locally using the `act` tool with Docker as the container runtime.
 
 ## Requirements
 
-- Podman or Docker
+- Docker
 - Act CLI tool (installation instructions below)
 - A local clone of the repository
 
@@ -30,29 +30,17 @@ act --version
 
 For other operating systems or alternative installation methods, visit the [Act GitHub Repository](https://github.com/nektos/act).
 
-### Installing Podman (Alternative to Docker)
+### Docker Requirements
 
-If you prefer to use Podman instead of Docker, you can install it on macOS using Homebrew:
+Make sure Docker is installed and running on your system. On macOS, Docker Desktop or Rancher Desktop are common options.
 
-```bash
-# Install Podman
-brew install podman
-
-# Initialize Podman machine (only needed once)
-podman machine init
-
-# Start Podman machine
-podman machine start
-```
-
-To verify the installation:
+To verify Docker is running:
 
 ```bash
-podman --version
-podman info
+docker info
 ```
 
-For other operating systems or alternative installation methods, visit the [Podman Installation Guide](https://podman.io/getting-started/installation).
+If you're using Rancher Desktop, the Docker socket will typically be at `~/.rd/docker.sock`.
 
 ## Quick Start
 
@@ -62,11 +50,11 @@ The simplest way to test a workflow is to use the provided `testing_workflows.sh
 # Navigate to the repository root
 cd /path/to/repository
 
-# Run with default settings (uses Podman by default)
+# Run with default settings
 ./src/test/act/testing_workflows.sh
 
 # Run with specific options using named parameters
-./src/test/act/testing_workflows.sh --workflow=.github/workflows/maven-build.yml --job=build --event=push --container=docker
+./src/test/act/testing_workflows.sh --workflow=.github/workflows/maven-build.yml --job=build --event=push
 
 # Get help for available options
 ./src/test/act/testing_workflows.sh --help
@@ -78,13 +66,7 @@ Options:
   --workflow=FILE     Workflow file to test (default: .github/workflows/maven-build.yml)
   --job=NAME          Job name to test (default: build)
   --event=TYPE        Event type to trigger (default: push)
-  --container=RUNTIME Container runtime to use (podman or docker, default: podman)
   -h, --help          Show this help message
-```
-
-You can still override the container runtime with an environment variable if preferred:
-```bash
-ACT_CONTAINER_RUNTIME=docker ./src/test/act/testing_workflows.sh
 ```
 
 ## Manual Testing Commands
@@ -103,20 +85,7 @@ act --version
 act -l -W .github/workflows/maven-build.yml
 ```
 
-### Using Podman (Default)
-
-```bash
-# Set container runtime to podman
-export ACT_CONTAINER_RUNTIME=podman
-
-# Run dry-run
-act -n push -W .github/workflows/maven-build.yml -j build --secret-file src/test/act/secrets.env
-
-# Run the workflow
-act push -W .github/workflows/maven-build.yml -j build --secret-file src/test/act/secrets.env
-```
-
-### Using Docker
+### Running Workflows with Docker
 
 ```bash
 # Get Docker socket path
@@ -135,10 +104,10 @@ GitHub Actions workflows can be triggered by different events. To test a specifi
 
 ```bash
 # Test a workflow_dispatch event
-act workflow_dispatch -W .github/workflows/maven-build.yml -j build --secret-file src/test/act/secrets.env
+act workflow_dispatch -W .github/workflows/maven-build.yml -j build --container-daemon-socket "$DOCKER_SOCKET" --secret-file src/test/act/secrets.env
 
 # Test a pull_request event
-act pull_request -W .github/workflows/maven-build.yml -j build --secret-file src/test/act/secrets.env
+act pull_request -W .github/workflows/maven-build.yml -j build --container-daemon-socket "$DOCKER_SOCKET" --secret-file src/test/act/secrets.env
 ```
 
 ## Configuration Files
@@ -180,23 +149,9 @@ Both configuration files are automatically created by the `testing_workflows.sh`
 
 ## Common Issues and Solutions
 
-### Container Runtime Connection Issues
+### Docker Connection Issues
 
-#### Podman Issues
-
-If using Podman, make sure the Podman machine is running:
-
-```bash
-# Check if Podman machine is running
-podman machine list
-
-# Start the Podman machine if it's not running
-podman machine start
-```
-
-#### Docker Issues
-
-If using Docker, make sure Docker is running and you have the correct socket path:
+Make sure Docker is running and you have the correct socket path:
 
 ```bash
 # Check if Docker is running
@@ -211,6 +166,16 @@ For Rancher Desktop users, the socket path is usually: `unix:///Users/username/.
 ### Missing Secrets
 
 If your workflow fails due to missing secrets, ensure your `src/test/act/secrets.env` file includes all required secrets.
+
+### Authentication Issues
+
+When running GitHub Actions locally, you may encounter authentication errors when the workflow tries to clone GitHub repositories. This is expected behavior in a local testing environment.
+
+If you need to resolve these issues, you can:
+
+1. Provide a valid GitHub token in your secrets file
+2. Configure Git credential helper for HTTPS authentication
+3. Use SSH authentication for GitHub
 
 ### Platform/Architecture Issues
 
@@ -235,3 +200,4 @@ To debug a failing workflow:
 
 - [Act GitHub Repository](https://github.com/nektos/act)
 - [Act Documentation](https://nektosact.com/)
+- [Docker Documentation](https://docs.docker.com/)
