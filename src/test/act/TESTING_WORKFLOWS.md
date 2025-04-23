@@ -50,8 +50,11 @@ The simplest way to test a workflow is to use the provided `testing_workflows.sh
 # Navigate to the repository root
 cd /path/to/repository
 
-# Run with default settings
+# Run with default settings (push event)
 ./src/test/act/testing_workflows.sh
+
+# Test a pull request event with specific base and head branches
+./src/test/act/testing_workflows.sh --event=pull_request --pr-base=main --pr-head=feature-branch
 
 # Run with specific options using named parameters
 ./src/test/act/testing_workflows.sh --workflow=.github/workflows/maven-build.yml --job=build --event=push
@@ -66,6 +69,8 @@ Options:
   --workflow=FILE     Workflow file to test (default: .github/workflows/maven-build.yml)
   --job=NAME          Job name to test (default: build)
   --event=TYPE        Event type to trigger (default: push)
+  --pr-base=BRANCH    Base branch for pull_request event (default: main)
+  --pr-head=BRANCH    Head branch for pull_request event (default: feature-branch)
   -h, --help          Show this help message
 ```
 
@@ -103,12 +108,67 @@ act push -W .github/workflows/maven-build.yml -j build --container-daemon-socket
 GitHub Actions workflows can be triggered by different events. To test a specific event type:
 
 ```bash
+# Get Docker socket path
+DOCKER_SOCKET=$(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}' 2>/dev/null || echo "unix:///var/run/docker.sock")
+
 # Test a workflow_dispatch event
 act workflow_dispatch -W .github/workflows/maven-build.yml -j build --container-daemon-socket "$DOCKER_SOCKET" --secret-file src/test/act/secrets.env
 
-# Test a pull_request event
+# Test a pull_request event (basic)
 act pull_request -W .github/workflows/maven-build.yml -j build --container-daemon-socket "$DOCKER_SOCKET" --secret-file src/test/act/secrets.env
+
+# Test a pull_request event with custom event payload
+cat > src/test/act/pr-event.json << EOF
+{
+  "pull_request": {
+    "head": {
+      "ref": "feature-branch",
+      "sha": "$(git rev-parse HEAD)",
+      "repo": {
+        "full_name": "SchweizerischeBundesbahnen/open-source-polarion-java-repo-template"
+      }
+    },
+    "base": {
+      "ref": "main",
+      "sha": "$(git rev-parse HEAD~1)",
+      "repo": {
+        "full_name": "SchweizerischeBundesbahnen/open-source-polarion-java-repo-template"
+      }
+    },
+    "number": 123,
+    "title": "Test PR for local workflow testing"
+  },
+  "repository": {
+    "full_name": "SchweizerischeBundesbahnen/open-source-polarion-java-repo-template"
+  },
+  "action": "opened"
+}
+EOF
+
+act pull_request -W .github/workflows/maven-build.yml -j build -e src/test/act/pr-event.json --container-daemon-socket "$DOCKER_SOCKET" --secret-file src/test/act/secrets.env
 ```
+
+### Testing Pull Request-related Workflows
+
+Pull request events are particularly important for CI/CD workflows. The script now provides enhanced support for testing pull request events with the following features:
+
+1. **Specify base and head branches**:
+   ```bash
+   ./src/test/act/testing_workflows.sh --event=pull_request --pr-base=main --pr-head=feature-branch
+   ```
+
+2. **Automatically generates PR context**: The script creates an event.json file with realistic PR data including:
+   - Current repository information
+   - Branch references for base and head
+   - Commit SHA values
+   - PR number and title
+
+3. **Proper cleanup**: Temporary event files are automatically removed after testing
+
+This makes it much easier to test workflows that depend on PR-specific context, such as:
+- Workflows that run different jobs based on the PR target branch
+- Code that uses the GitHub context to fetch PR information
+- Conditional steps that run only for certain PR patterns
 
 ## Configuration Files
 
@@ -186,6 +246,8 @@ Some actions might not work locally due to platform differences. In these cases,
 - Add `-v` flag for verbose output
 - Use `--bind` flag to mount additional directories
 - For complex workflows, consider testing one job at a time
+- When testing PR workflows, ensure your local git repository has at least one commit history
+- The PR base and head branches don't need to actually exist locally - they're just references used in the event payload
 
 ## Debugging Workflows
 
