@@ -1,20 +1,54 @@
 #!/bin/bash
 # Script to test GitHub Actions workflows using act
-# Usage: ./test_workflows.sh [workflow_file] [job_name]
-# Example: ./test_workflows.sh .github/workflows/maven-build.yml build
+# Usage: ./test_workflows.sh [--workflow=FILE] [--job=NAME] [--event=TYPE] [--container=RUNTIME]
+# Example: ./test_workflows.sh --workflow=.github/workflows/maven-build.yml --job=build --container=docker
 
 set -e
 
+# Default values
+WORKFLOW_FILE=".github/workflows/maven-build.yml"
+JOB_NAME="build"
+EVENT_TYPE="push"
+export ACT_CONTAINER_RUNTIME="${ACT_CONTAINER_RUNTIME:-podman}"
+
+# Parse named parameters
+for i in "$@"; do
+  case $i in
+    --workflow=*)
+      WORKFLOW_FILE="${i#*=}"
+      ;;
+    --job=*)
+      JOB_NAME="${i#*=}"
+      ;;
+    --event=*)
+      EVENT_TYPE="${i#*=}"
+      ;;
+    --container=*)
+      export ACT_CONTAINER_RUNTIME="${i#*=}"
+      ;;
+    -h|--help)
+      echo "Usage: $0 [--workflow=FILE] [--job=NAME] [--event=TYPE] [--container=RUNTIME]"
+      echo "Options:"
+      echo "  --workflow=FILE    Workflow file to test (default: .github/workflows/maven-build.yml)"
+      echo "  --job=NAME         Job name to test (default: build)"
+      echo "  --event=TYPE       Event type to trigger (default: push)"
+      echo "  --container=RUNTIME Container runtime to use (podman or docker, default: podman)"
+      echo "  -h, --help         Show this help message"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $i"
+      echo "Use $0 --help for usage information"
+      exit 1
+      ;;
+  esac
+done
+
 # Configuration
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-DOCKER_SOCKET=$(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}')
 SECRETS_FILE="${REPO_ROOT}/src/test/act/secrets.env"
 ACT_CONFIG="${REPO_ROOT}/src/test/act/.actrc"
-
-# Default values
-WORKFLOW_FILE="${1:-.github/workflows/maven-build.yml}"
-JOB_NAME="${2:-build}"
-EVENT_TYPE="${3:-push}"
+WORKFLOW_PATH="${REPO_ROOT}/${WORKFLOW_FILE}"
 
 # Colors for better output
 GREEN='\033[0;32m'
@@ -22,24 +56,56 @@ YELLOW='\033[0;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+# Set container-specific variables
+if [[ "$ACT_CONTAINER_RUNTIME" == "docker" ]]; then
+  DOCKER_SOCKET=$(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}' 2>/dev/null || echo "unix:///var/run/docker.sock")
+  CONTAINER_ARGS="--container-daemon-socket \"$DOCKER_SOCKET\""
+else
+  CONTAINER_ARGS=""
+fi
+
+# Set trap to ensure cleanup happens even if script exits early
+trap cleanup EXIT
+
+# Cleanup function to remove secrets file
+cleanup() {
+  echo -e "\n${YELLOW}Cleaning up secrets file...${NC}"
+  if [ -f "$SECRETS_FILE" ]; then
+    rm -f "$SECRETS_FILE"
+    echo -e "${GREEN}Secrets file removed for security.${NC}"
+  fi
+}
+
 # Print header
 echo -e "${GREEN}===== GitHub Actions Workflow Test =====${NC}"
 echo -e "Repository: ${YELLOW}${REPO_ROOT}${NC}"
 echo -e "Workflow: ${YELLOW}${WORKFLOW_FILE}${NC}"
+echo -e "Workflow Path: ${YELLOW}${WORKFLOW_PATH}${NC}"
 echo -e "Job: ${YELLOW}${JOB_NAME}${NC}"
 echo -e "Event: ${YELLOW}${EVENT_TYPE}${NC}"
-echo -e "Docker socket: ${YELLOW}${DOCKER_SOCKET}${NC}"
+echo -e "Container Runtime: ${YELLOW}${ACT_CONTAINER_RUNTIME}${NC}"
+if [[ "$ACT_CONTAINER_RUNTIME" == "docker" ]]; then
+  echo -e "Docker socket: ${YELLOW}${DOCKER_SOCKET}${NC}"
+fi
 echo -e "Secrets file: ${YELLOW}${SECRETS_FILE}${NC}"
 echo -e "Act config: ${YELLOW}${ACT_CONFIG}${NC}"
 echo -e "${GREEN}=======================================${NC}\n"
 
-# Verify Docker is running
-echo -e "${YELLOW}Checking Docker status...${NC}"
-if ! docker info > /dev/null 2>&1; then
-  echo -e "${RED}ERROR: Docker is not running. Please start Docker and try again.${NC}"
-  exit 1
+# Verify container runtime is running
+echo -e "${YELLOW}Checking ${ACT_CONTAINER_RUNTIME} status...${NC}"
+if [[ "$ACT_CONTAINER_RUNTIME" == "docker" ]]; then
+  if ! docker info > /dev/null 2>&1; then
+    echo -e "${RED}ERROR: Docker is not running. Please start Docker and try again.${NC}"
+    exit 1
+  fi
+  echo -e "${GREEN}Docker is running.${NC}\n"
+else
+  if ! podman info > /dev/null 2>&1; then
+    echo -e "${RED}ERROR: Podman is not running. Please start Podman machine with 'podman machine start' and try again.${NC}"
+    exit 1
+  fi
+  echo -e "${GREEN}Podman is running.${NC}\n"
 fi
-echo -e "${GREEN}Docker is running.${NC}\n"
 
 # Verify act is installed
 echo -e "${YELLOW}Checking act installation...${NC}"
@@ -75,23 +141,33 @@ EOF
   echo -e "${YELLOW}Created default Act config file at ${ACT_CONFIG}${NC}\n"
 fi
 
+# Build the act command based on container runtime
+if [[ "$ACT_CONTAINER_RUNTIME" == "docker" ]]; then
+  DRY_RUN_CMD="act -n \"$EVENT_TYPE\" -W \"$WORKFLOW_PATH\" -j \"$JOB_NAME\" --container-daemon-socket \"$DOCKER_SOCKET\" --secret-file \"$SECRETS_FILE\""
+  RUN_CMD="act \"$EVENT_TYPE\" -W \"$WORKFLOW_PATH\" -j \"$JOB_NAME\" --container-daemon-socket \"$DOCKER_SOCKET\" --secret-file \"$SECRETS_FILE\""
+else
+  DRY_RUN_CMD="act -n \"$EVENT_TYPE\" -W \"$WORKFLOW_PATH\" -j \"$JOB_NAME\" --secret-file \"$SECRETS_FILE\""
+  RUN_CMD="act \"$EVENT_TYPE\" -W \"$WORKFLOW_PATH\" -j \"$JOB_NAME\" --secret-file \"$SECRETS_FILE\""
+fi
+
 # Run dry-run first to check configuration
 echo -e "${YELLOW}Running dry-run to validate configuration...${NC}"
-act -n "$EVENT_TYPE" -W "$WORKFLOW_FILE" -j "$JOB_NAME" --container-daemon-socket "$DOCKER_SOCKET" --secret-file "$SECRETS_FILE"
+eval $DRY_RUN_CMD
 
 # Ask for confirmation before running the actual workflow
 echo -e "\n${YELLOW}Do you want to run the actual workflow? (y/N)${NC}"
 read -r CONFIRM
 if [[ "$CONFIRM" =~ ^[Yy]$ ]]; then
   echo -e "${GREEN}Running the workflow...${NC}"
-  act "$EVENT_TYPE" -W "$WORKFLOW_FILE" -j "$JOB_NAME" --container-daemon-socket "$DOCKER_SOCKET" --secret-file "$SECRETS_FILE"
+  eval $RUN_CMD
 else
   echo -e "${YELLOW}Workflow run cancelled.${NC}"
 fi
 
 # Note about other options
 echo -e "\n${GREEN}===== Additional Options =====${NC}"
-echo -e "To run with verbose output: add -v flag"
-echo -e "To run a specific event: ${YELLOW}$0 $WORKFLOW_FILE $JOB_NAME workflow_dispatch${NC}"
-echo -e "To list all jobs in the workflow: ${YELLOW}act -l -W $WORKFLOW_FILE"
+echo -e "To run with verbose output: add -v to the act command"
+echo -e "To use Docker instead of Podman: ${YELLOW}$0 --container=docker${NC}"
+echo -e "To run a specific event: ${YELLOW}$0 --event=workflow_dispatch${NC}"
+echo -e "To list all jobs in the workflow: ${YELLOW}act -l -W $WORKFLOW_PATH${NC}"
 echo -e "${GREEN}===========================${NC}"

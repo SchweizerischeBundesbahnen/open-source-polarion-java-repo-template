@@ -1,10 +1,10 @@
 # Testing GitHub Actions Workflows Locally
 
-This document provides guidance on how to test GitHub Actions workflows locally using the `act` tool.
+This document provides guidance on how to test GitHub Actions workflows locally using the `act` tool. The script supports both Podman and Docker, with Podman as the default container runtime.
 
 ## Requirements
 
-- Docker (Rancher Desktop or Docker Desktop) or Podman
+- Podman or Docker
 - Act CLI tool (installation instructions below)
 - A local clone of the repository
 
@@ -62,21 +62,29 @@ The simplest way to test a workflow is to use the provided `testing_workflows.sh
 # Navigate to the repository root
 cd /path/to/repository
 
-# Container runtime setup (choose ONE option only):
-# Option 1: For Rancher Desktop with Docker (Moby) engine
-export DOCKER_HOST=unix://$HOME/.rd/docker.sock
-
-# Option 2: Force Act to use the Docker CLI directly
-export ACT_CONTAINER_RUNTIME=docker
-
-# Option 3: Use Podman instead of Docker
-export ACT_CONTAINER_RUNTIME=podman
-
-# Run the script with default settings (tests maven-build.yml, build job)
+# Run with default settings (uses Podman by default)
 ./src/test/act/testing_workflows.sh
 
-# Or specify a specific workflow file, job, and event type
-./src/test/act/testing_workflows.sh .github/workflows/custom-workflow.yml job-name workflow_dispatch
+# Run with specific options using named parameters
+./src/test/act/testing_workflows.sh --workflow=.github/workflows/maven-build.yml --job=build --event=push --container=docker
+
+# Get help for available options
+./src/test/act/testing_workflows.sh --help
+```
+
+All parameters are optional and use sensible defaults:
+```
+Options:
+  --workflow=FILE     Workflow file to test (default: .github/workflows/maven-build.yml)
+  --job=NAME          Job name to test (default: build)
+  --event=TYPE        Event type to trigger (default: push)
+  --container=RUNTIME Container runtime to use (podman or docker, default: podman)
+  -h, --help          Show this help message
+```
+
+You can still override the container runtime with an environment variable if preferred:
+```bash
+ACT_CONTAINER_RUNTIME=docker ./src/test/act/testing_workflows.sh
 ```
 
 ## Manual Testing Commands
@@ -95,18 +103,30 @@ act --version
 act -l -W .github/workflows/maven-build.yml
 ```
 
-### Dry Run a Workflow Job
-
-Dry run lets you see what would happen without actually executing the workflow:
+### Using Podman (Default)
 
 ```bash
-act -n push -W .github/workflows/maven-build.yml -j build --container-daemon-socket $(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}') --secret-file src/test/act/secrets.env
+# Set container runtime to podman
+export ACT_CONTAINER_RUNTIME=podman
+
+# Run dry-run
+act -n push -W .github/workflows/maven-build.yml -j build --secret-file src/test/act/secrets.env
+
+# Run the workflow
+act push -W .github/workflows/maven-build.yml -j build --secret-file src/test/act/secrets.env
 ```
 
-### Run a Workflow Job for Real
+### Using Docker
 
 ```bash
-act push -W .github/workflows/maven-build.yml -j build --container-daemon-socket $(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}') --secret-file src/test/act/secrets.env
+# Get Docker socket path
+DOCKER_SOCKET=$(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}' 2>/dev/null || echo "unix:///var/run/docker.sock")
+
+# Run dry-run
+act -n push -W .github/workflows/maven-build.yml -j build --container-daemon-socket "$DOCKER_SOCKET" --secret-file src/test/act/secrets.env
+
+# Run the workflow
+act push -W .github/workflows/maven-build.yml -j build --container-daemon-socket "$DOCKER_SOCKET" --secret-file src/test/act/secrets.env
 ```
 
 ### Testing Different Event Types
@@ -115,10 +135,10 @@ GitHub Actions workflows can be triggered by different events. To test a specifi
 
 ```bash
 # Test a workflow_dispatch event
-act workflow_dispatch -W .github/workflows/maven-build.yml -j build --container-daemon-socket $(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}') --secret-file src/test/act/secrets.env
+act workflow_dispatch -W .github/workflows/maven-build.yml -j build --secret-file src/test/act/secrets.env
 
 # Test a pull_request event
-act pull_request -W .github/workflows/maven-build.yml -j build --container-daemon-socket $(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}') --secret-file src/test/act/secrets.env
+act pull_request -W .github/workflows/maven-build.yml -j build --secret-file src/test/act/secrets.env
 ```
 
 ## Configuration Files
@@ -160,15 +180,33 @@ Both configuration files are automatically created by the `testing_workflows.sh`
 
 ## Common Issues and Solutions
 
-### Docker Connection Issues
+### Container Runtime Connection Issues
 
-If using Rancher Desktop, make sure to specify the correct socket path:
+#### Podman Issues
+
+If using Podman, make sure the Podman machine is running:
 
 ```bash
---container-daemon-socket $(docker context inspect rancher-desktop -f '{{.Endpoints.docker.Host}}')
+# Check if Podman machine is running
+podman machine list
+
+# Start the Podman machine if it's not running
+podman machine start
 ```
 
-If using Podman instead of Docker, refer to the container runtime setup in the Quick Start section.
+#### Docker Issues
+
+If using Docker, make sure Docker is running and you have the correct socket path:
+
+```bash
+# Check if Docker is running
+docker info
+
+# Check Docker context
+docker context inspect
+```
+
+For Rancher Desktop users, the socket path is usually: `unix:///Users/username/.rd/docker.sock`
 
 ### Missing Secrets
 
@@ -176,7 +214,7 @@ If your workflow fails due to missing secrets, ensure your `src/test/act/secrets
 
 ### Platform/Architecture Issues
 
-Some actions might not work locally due to platform differences. In these cases, you can modify the `.actrc` file to include appropriate platform settings.
+Some actions might not work locally due to platform differences. In these cases, you can modify the `src/test/act/.actrc` file to include appropriate platform settings.
 
 ## Additional Tips
 
