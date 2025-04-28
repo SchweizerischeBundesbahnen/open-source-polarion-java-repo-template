@@ -35,7 +35,7 @@ jobs:
       - name: 🧱 Set up JDK and Maven
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4.7.1
         with:
-          distribution: adopt
+          distribution: temurin
           java-version: 17
           gpg-private-key: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY }}
       - name: 📝 Get the project version
@@ -135,7 +135,7 @@ jobs:
       - name: 🧱 Set up JDK and Maven
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4.7.1
         with:
-          distribution: adopt
+          distribution: temurin
           java-version: 17
           gpg-private-key: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY }}
       - name: 💾 Restore cache using cache key
@@ -165,7 +165,7 @@ jobs:
       - name: 🧱 Set up JDK and Maven
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4.7.1
         with:
-          distribution: adopt
+          distribution: temurin
           java-version: 17
       - name: 💾 Restore cache using cache key
         id: restore-cache
