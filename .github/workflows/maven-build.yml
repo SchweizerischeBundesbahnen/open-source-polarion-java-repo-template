@@ -69,6 +69,8 @@ jobs:
     outputs:
       project_version: ${{ steps.project_version.outputs.project_version }}
       cache_key: ${{ steps.cache_key.outputs.cache_key }}
+
+  # Deploy release to Maven Central
   deploy-maven-central:
     needs: build
     runs-on: ubuntu-latest
@@ -121,7 +123,9 @@ jobs:
           gpg-private-key: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY }}
           cache-key: ${{ needs.build.outputs.cache_key }}
       - name: 📦 Deploy artifacts to Maven Central
-        run: mvn --batch-mode -Dmaven.test.skip=true deploy -P gpg-sign -P nexus-staging
+        run: mvn --batch-mode -Dmaven.test.skip=true deploy -P gpg-sign -P nexus-staging -Dnexus-staging-maven-plugin.autoReleaseAfterClose=false
+
+  # Deploy releases and snapshots for main branch to GitHub Packages
   deploy-github-packages:
     needs: build
     runs-on: ubuntu-latest
