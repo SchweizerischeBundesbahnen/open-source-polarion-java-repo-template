@@ -14,7 +14,6 @@ jobs:
       contents: read
       packages: read
     env:
-      GITHUB_TOKEN: ${{ github.token }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       MARKDOWN2HTML_MAVEN_PLUGIN_FAIL_ON_ERROR: true
     steps:
@@ -46,9 +45,9 @@ jobs:
             /home/runner/work
           key: ${{ steps.cache_key.outputs.cache_key }}
       - name: 🔘 Generate settings.xml for Maven
-        uses: whelk-io/maven-settings-xml-action@9dc09b23833fa9aa7f27b63db287951856f3433d  # v22
+        uses: s4u/maven-settings-action@64e42c454dbd42ef6370ac8539685755aedd205b  # v3.1.0
         with:
-          repositories: >
+          repositories: |
             [
               {
                 "id": "s3",
@@ -57,33 +56,6 @@ jobs:
                 "releases": {
                   "enabled": "true",
                   "updatePolicy": "never"
-                }
-              }
-            ]
-          servers: >
-            [
-              {
-                "id": "github",
-                "username": "${env.GITHUB_ACTOR}",
-                "password": "${env.GITHUB_TOKEN}"
-              },
-              {
-                "id": "ossrh",
-                "username": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME}",
-                "password": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN}"
-              },
-              {
-                "id": "gpg.passphrase",
-                "passphrase": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE}"
-              }
-            ]
-          profiles: >
-            [
-              {
-                "id": "deploy-github-packages",
-                "properties":
-                {
-                  "altDeploymentRepository": "github::default::https://maven.pkg.github.com/${{ github.repository }}"
                 }
               }
             ]
