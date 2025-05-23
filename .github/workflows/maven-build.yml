@@ -64,15 +64,6 @@ jobs:
                 "id": "s3",
                 "username": "${env.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY}",
                 "password": "${env.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY}"
-              },
-              {
-                "id": "ossrh",
-                "username": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME}",
-                "password": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN}"
-              },
-              {
-                "id": "gpg.passphrase",
-                "passphrase": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE}"
               }
             ]
       - name: 🔘 Print settings.xml
