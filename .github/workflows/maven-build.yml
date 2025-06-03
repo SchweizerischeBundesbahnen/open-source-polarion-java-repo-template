@@ -35,7 +35,7 @@ jobs:
       - name: 🧱 Set up JDK and Maven
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4.7.1
         with:
-          distribution: adopt
+          distribution: temurin
           java-version: 17
           cache: maven
           gpg-private-key: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY }}
@@ -73,7 +73,7 @@ jobs:
                 "password": "${env.GITHUB_TOKEN}"
               },
               {
-                "id": "ossrh",
+                "id": "sonatype-central",
                 "username": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME}",
                 "password": "${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN}"
               },
