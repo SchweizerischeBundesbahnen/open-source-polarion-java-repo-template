@@ -46,7 +46,7 @@ jobs:
             /home/runner/work
           key: ${{ steps.cache_key.outputs.cache_key }}
       - name: 🔘 Print settings.xml
-        run: cat /home/runner/.m2/settings.xml
+        run: cat ${{ github.workspace }}/settings.xml
       - name: 📦 Build with Maven for Pushes
         if: github.event_name == 'push'
         env:
