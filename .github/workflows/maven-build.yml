@@ -49,7 +49,7 @@ jobs:
         if: github.event_name == 'push'
         env:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
-        run: mvn --batch-mode clean package  # sonar:sonar -Dsonar.branch.name="${GITHUB_HEAD_REF}"
+        run: mvn --batch-mode -s ${{ github.workspace }}/settings.xml clean package  # sonar:sonar -Dsonar.branch.name="${GITHUB_HEAD_REF}"
       - name: 📦 Build with Maven for PRs
         if: github.event_name == 'pull_request'
         env:
