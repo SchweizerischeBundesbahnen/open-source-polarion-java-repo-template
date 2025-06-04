@@ -104,6 +104,7 @@ jobs:
       S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY }}
       S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY: ${{ secrets.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY }}
       GITHUB_TOKEN: ${{ github.token }}
+      GITHUB_REPO_NAME: ${{ github.repository }}
     steps:
       - name: 🧱 Set up JDK and Maven
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4.7.1
