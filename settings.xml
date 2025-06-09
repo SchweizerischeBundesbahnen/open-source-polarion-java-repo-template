@@ -8,9 +8,9 @@
             <id>github</id>
             <repositories>
                 <repository>
-                    <id>s3</id>
-                    <name>s3.sbb.polarion.maven.repo</name>
-                    <url>s3://sbb-polarion-maven-repo/polarion.mvn</url>
+                    <id>jfrog_io</id>
+                    <name>sbb.jfrog.io/artifactory/polarion-mvn</name>
+                    <url>https://sbb.jfrog.io/artifactory/polarion-mvn</url>
                     <releases>
                         <enabled>true</enabled>
                         <updatePolicy>never</updatePolicy>
@@ -28,9 +28,15 @@
     </profiles>
     <servers>
         <server>
-            <id>s3</id>
-            <username>${env.S3_SBB_POLARION_MAVEN_REPO_RW_ACCESS_KEY}</username>
-            <password>${env.S3_SBB_POLARION_MAVEN_REPO_RW_SECRET_ACCESS_KEY}</password>
+            <id>jfrog_io</id>
+            <configuration>
+                <httpHeaders>
+                    <property>
+                        <name>X-JFrog-Art-Api</name>
+                        <value>${env.IO_JFROG_SBB_POLARION_TOKEN}</value>
+                    </property>
+                </httpHeaders>
+            </configuration>
         </server>
         <server>
             <id>github</id>
