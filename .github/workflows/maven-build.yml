@@ -25,7 +25,7 @@ jobs:
       - name: 📄 Checkout the repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Sonar needs full history
           persist-credentials: false
       - name: 🧱 Set up JDK and Maven with cache
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4.7.1
@@ -60,13 +60,11 @@ jobs:
           GITHUB_PR_NUMBER_REF: ${{ github.event.pull_request.number }}
         run: mvn --batch-mode -s "${SETTINGS_XML}" clean package  # sonar:sonar -Dsonar.pullrequest.base="${GITHUB_HEAD_REF}" -Dsonar.pullrequest.branch="${GITHUB_BASE_REF}" -Dsonar.pullrequest.key="${GITHUB_PR_NUMBER_REF}"
       - name: 📦 Upload build artifacts
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882  # v4.4.3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
         with:
           name: maven-artifacts
           path: |
             target/*.jar
-            pom.xml
-            .mvn/
           retention-days: 1
     outputs:
       project_version: ${{ steps.project_metadata.outputs.version }}
@@ -86,16 +84,21 @@ jobs:
       COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN }}
       COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE }}
     steps:
+      - name: 📄 Checkout the repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: 📥 Download build artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093  # v4.3.0
+        with:
+          name: maven-artifacts
       - name: 🧱 Set up JDK and Maven with cache
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4.7.1
         with:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
-      - name: 📥 Download build artifacts
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  # v4.1.7
-        with:
-          name: maven-artifacts
       - name: 📦 Deploy to Maven Central
         run: |
           # Skip compilation since we are using pre-built artifacts
@@ -118,16 +121,21 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
       GITHUB_REPO_NAME: ${{ github.repository }}
     steps:
+      - name: 📄 Checkout the repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: 📥 Download build artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093  # v4.3.0
+        with:
+          name: maven-artifacts
       - name: 🧱 Set up JDK and Maven with cache
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4.7.1
         with:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
-      - name: 📥 Download build artifacts
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  # v4.1.7
-        with:
-          name: maven-artifacts
       - name: 📦 Deploy to GitHub Packages
         run: |
           # Skip compilation since we are using pre-built artifacts
