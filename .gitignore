@@ -34,7 +34,6 @@ replay_pid*
 !.idea/codeStyles/Project.xml
 !.idea/codeStyles/codeStyleConfig.xml
 
-
 target/
 *.iml
 dependency-reduced-pom.xml
