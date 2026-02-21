@@ -1,8 +1,14 @@
 ---
+# Release Please Workflow
+# Supports both main branch and LTS (Long-Term Support) branches.
+# LTS branches must follow the naming pattern: release-v{major} (e.g., release-v6)
+# See RELEASE.md for full documentation on LTS releases.
 name: release-please
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - release-v*  # LTS branches (e.g., release-v6, release-v7)
   workflow_dispatch:
 jobs:
   release-please:
@@ -17,4 +23,4 @@ jobs:
         uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38  # v4.4.0
         with:
           release-type: maven
-          target-branch: main
+          target-branch: ${{ github.ref_name }}
