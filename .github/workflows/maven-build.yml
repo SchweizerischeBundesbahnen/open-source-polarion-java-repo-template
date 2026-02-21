@@ -154,6 +154,21 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
+      - name: 🗑️ Delete existing SNAPSHOT version from GitHub Packages
+        if: ${{ needs.build.outputs.is_release == 'false' }}
+        run: |
+          GROUP_ID=$(mvn -s "${SETTINGS_XML}" help:evaluate -Dexpression=project.groupId -q -DforceStdout)
+          ARTIFACT_ID=$(mvn -s "${SETTINGS_XML}" help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+          PACKAGE_NAME="${GROUP_ID}.${ARTIFACT_ID}"
+          API_URL="/orgs/${GITHUB_REPOSITORY_OWNER}/packages/maven/${PACKAGE_NAME}/versions"
+          VERSION_IDS=$(gh api --paginate "${API_URL}" --jq ".[] | select(.name == \"${PROJECT_VERSION}\") | .id" || true)
+          if [ -n "${VERSION_IDS}" ]; then
+            printf '%s\n' "${VERSION_IDS}" | while IFS= read -r VERSION_ID; do
+              if [ -n "${VERSION_ID}" ]; then
+                gh api --method DELETE "${API_URL}/${VERSION_ID}"
+              fi
+            done
+          fi
       - name: 📦 Deploy to GitHub Packages
         # Releases should only be deployed to GitHub packages when the repo is private
         # Only snapshots should always be deployed here
