@@ -16,7 +16,7 @@ This document provides comprehensive development guidelines for contributing to 
 
 ### Prerequisites
 
-- Java JDK 17
+- Java JDK 21
 - Maven 3.9
 - IDE of your choice (IntelliJ IDEA, Eclipse, VS Code with Java extensions)
 - Git
@@ -60,7 +60,9 @@ The project follows a standard Maven directory structure:
 │   │       └── webapp/     # Web resources
 │   └── test/               # Test sources
 ├── docs/                   # Documentation
-├── LICENSES/               # License files
+├── LICENSE                 # Apache License 2.0
+├── NOTICE                  # Copyright attribution
+├── DCO                     # Developer Certificate of Origin
 ├── pom.xml                 # Maven configuration
 ├── README.md               # Project overview
 └── various .md files       # Additional documentation
