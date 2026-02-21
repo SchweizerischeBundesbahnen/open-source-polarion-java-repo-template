@@ -87,9 +87,11 @@ jobs:
             target/*.pom
           retention-days: 1
           if-no-files-found: error
+  # Deploy releases to Maven Central from main and LTS branches (release-v*)
+  # See RELEASE.md for LTS branch documentation
   deploy-maven-central:
     needs: build
-    if: ${{ needs.build.outputs.is_release == 'true' && github.ref == 'refs/heads/main' }}
+    if: ${{ needs.build.outputs.is_release == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release-v')) }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -125,9 +127,11 @@ jobs:
             -Dmaven.wagon.http.connectionTimeout=3600000 \
             -Dmaven.wagon.http.readTimeout=3600000 \
             -Dcentral-publishing-maven-plugin.autoPublish=false
+  # Deploy to GitHub Packages (snapshots from main only) and upload release assets to GitHub Release
+  # LTS branches (release-v*) only upload release assets, no snapshot deployment
   deploy-github-packages:
     needs: build
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' || (needs.build.outputs.is_release == 'true' && startsWith(github.ref, 'refs/heads/release-v')) }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
