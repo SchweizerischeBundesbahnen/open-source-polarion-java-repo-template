@@ -1,0 +1,78 @@
+---
+name: Claude Code Review
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Optional: Only run on specific file changes
+    # paths:
+    #   - "src/**/*.java"
+    #   - "src/**/*.js"
+    #   - "src/**/*.html"
+    #   - "src/**/*.css"
+    #   - "src/**/*.vm"
+    #   - "src/**/*.xml"
+    #   - "src/**/*.properties"
+    #   - "pom.xml"
+    #   - ".github/workflows/*.yml"
+    #   - ".github/workflows/*.yaml"
+    #   - "docs/**/*.md"
+    #   - "*.md"
+jobs:
+  claude-review:
+    # Skip Claude review for Renovate, Dependabot PRs, and fork PRs
+    if: |
+      github.event.pull_request.user.login != 'renovate[bot]' &&
+      github.event.pull_request.user.login != 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read  # Security: read-only sufficient for reviews (changed from write)
+      pull-requests: write
+      issues: write
+      actions: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0  # Required: full history to compare PR against base branch
+          persist-credentials: false  # Security: don't persist credentials (was true)
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@edd85d61533cbba7b57ed0ca4af1750b1fdfd3c4  # v1.0.55
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+            Review the PR diff. Report ONLY actual problems in changed lines.
+            FOCUS ON:
+            - Bugs or logic errors
+            - Security vulnerabilities (SQL injection, XSS, auth bypass, secrets exposure)
+            - Breaking changes not mentioned in PR description
+            - Missing tests for new functionality
+            - Critical performance issues introduced by changes
+            DO NOT:
+            - Review unchanged code, style/formatting, optional improvements, or provide praise
+            - Run build tools (Maven, npm, gradle, etc.)
+            - Check external dependency versions
+            GUIDELINES:
+            - Use Read/Grep/Glob to search the codebase for context
+            - If you need to understand parent classes or dependencies, search for usage patterns
+            - The PR branch is already checked out in the current working directory
+            - Post your review using `gh pr comment` as a top-level PR comment
+            - Only post GitHub comments - don't submit review text as messages
+            FORMAT (be TERSE):
+            ## Issues Found
+
+            ### 🔴 Critical
+            - `file:line` - Problem description - Fix: specific solution
+
+            ### 🟡 Important
+            - `file:line` - Issue description - Suggestion: specific fix
+            If NO issues found: "✅ No issues found."
+
+          # Official recommendation: Enable GitHub commenting tools for posting PR comments
+          claude_args: |-
+            --max-turns 20
+            --allowed-tools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh api:*),Bash(mvn help\\:evaluate:*),WebSearch,Read,Grep,Glob"
