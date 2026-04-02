@@ -15,6 +15,10 @@ Releases within our project are exclusively overseen by designated code owners, 
 4. Subsequent to each release, the process iterates to update the version to X.Y.Z-SNAPSHOT, thereby preparing a new pull request for the forthcoming X.Y.Z version release.
 
 
+### Branch Protection
+
+The [`release-please-guard`](/.github/workflows/release-please-guard.yml) workflow prevents PRs from merging while a release-please snapshot PR is pending. This ensures the snapshot version bump lands immediately after the release, avoiding misordered commits on the target branch. To enforce this, add `release-please-guard` as a required status check in your branch protection rules for `main` and any `release-v*` branches.
+
 For comprehensive information, please consult the [Release Please documentation](https://github.com/googleapis/release-please).
 
 ## LTS (Long-Term Support) Releases

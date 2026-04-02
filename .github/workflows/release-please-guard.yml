@@ -1,0 +1,33 @@
+---
+# Blocks PR merges while a release-please snapshot PR is pending.
+# This prevents commits from landing between the release and the snapshot version bump.
+# Add the "release-please-guard" status check as required in branch protection rules.
+name: release-please-guard
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions: {}
+jobs:
+  release-please-guard:
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'release-please--') != true
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Check for pending release-please PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BASE_BRANCH: ${{ github.base_ref }}
+        run: |-
+          RELEASE_PRS=$(gh pr list \
+            --base "$BASE_BRANCH" \
+            --author "app/release-please" \
+            --state open \
+            --json number,title \
+            --jq 'length')
+          if [ "$RELEASE_PRS" -gt 0 ]; then
+            echo "::error::There is an open release-please PR targeting '$BASE_BRANCH'. Merge that PR first before merging other PRs to ensure correct commit ordering."
+            exit 1
+          fi
+          echo "No pending release-please PR found. Good to go."
