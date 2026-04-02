@@ -1,11 +1,13 @@
 ---
 # Blocks PR merges while a release-please snapshot PR is pending.
 # This prevents commits from landing between the release and the snapshot version bump.
-# Add the "release-please-guard" status check as required in branch protection rules.
+# Add the "release-please-guard" status check as required in branch protection rules,
+# and either enable a merge queue or require branches to be up to date before merging.
 name: release-please-guard
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  merge_group:
 permissions: {}
 jobs:
   release-please-guard:
