@@ -14,21 +14,19 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.head_ref, 'release-please--') != true
     permissions:
-      pull-requests: read
+      contents: read
     steps:
-      - name: Check for pending release-please PR
+      - name: Check base branch version is SNAPSHOT
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           BASE_BRANCH: ${{ github.base_ref }}
         run: |-
-          RELEASE_PRS=$(gh pr list \
-            --base "$BASE_BRANCH" \
-            --state open \
-            --json number,title,headRefName \
-            --jq '[.[] | select(.headRefName | startswith("release-please--"))] | length')
-          if [ "$RELEASE_PRS" -gt 0 ]; then
-            echo "::error::There is an open release-please PR targeting '$BASE_BRANCH'. Merge that PR first before merging other PRs to ensure correct commit ordering."
+          VERSION=$(gh api "repos/$GH_REPO/contents/pom.xml?ref=$BASE_BRANCH" \
+            --jq '.content' | base64 -d | \
+            awk '/<parent>/{p=1} /<\/parent>/{p=0;next} !p && /<version>/{gsub(/.*<version>|<\/version>.*/,""); print; exit}')
+          if [[ "$VERSION" != *-SNAPSHOT ]]; then
+            echo "::error::Version on '$BASE_BRANCH' is '$VERSION' (not a SNAPSHOT). Merge the release-please snapshot PR first before merging other PRs."
             exit 1
           fi
-          echo "No pending release-please PR found. Good to go."
+          echo "Version is '$VERSION'. Good to go."
