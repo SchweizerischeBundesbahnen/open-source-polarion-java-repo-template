@@ -24,10 +24,9 @@ jobs:
         run: |-
           RELEASE_PRS=$(gh pr list \
             --base "$BASE_BRANCH" \
-            --author "app/release-please" \
             --state open \
-            --json number,title \
-            --jq 'length')
+            --json number,title,headRefName \
+            --jq '[.[] | select(.headRefName | startswith("release-please--"))] | length')
           if [ "$RELEASE_PRS" -gt 0 ]; then
             echo "::error::There is an open release-please PR targeting '$BASE_BRANCH'. Merge that PR first before merging other PRs to ensure correct commit ordering."
             exit 1
