@@ -1,0 +1,40 @@
+---
+# Blocks PR merges when the base branch pom.xml version is not a *-SNAPSHOT version.
+# This prevents commits from landing after a release and before the snapshot version bump is merged.
+# Add the "release-please-guard" status check as required in branch protection rules
+# and enable "Require branches to be up to date before merging".
+name: release-please-guard
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions: {}
+jobs:
+  release-please-guard:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check base branch version is SNAPSHOT
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BASE_BRANCH: ${{ github.base_ref }}
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: |-
+          set -euo pipefail
+          if [[ "$HEAD_BRANCH" == release-please--* ]]; then
+            echo "Release-please PR — skipping guard."
+            exit 0
+          fi
+          VERSION=$(gh api "repos/$GH_REPO/contents/pom.xml?ref=$BASE_BRANCH" \
+            --jq '.content' | base64 -d | \
+            awk '/<parent>/{p=1} /<\/parent>/{p=0;next} !p && /<version>/{gsub(/.*<version>|<\/version>.*/,""); print; exit}')
+          if [[ -z "$VERSION" ]]; then
+            echo "::error::Failed to extract project version from pom.xml on '$BASE_BRANCH'."
+            exit 1
+          fi
+          if [[ "$VERSION" != *-SNAPSHOT ]]; then
+            echo "::error::Version on '$BASE_BRANCH' is '$VERSION' (not a SNAPSHOT). Merge the release-please snapshot PR first before merging other PRs."
+            exit 1
+          fi
+          echo "Version is '$VERSION'. Good to go."
