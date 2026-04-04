@@ -11,7 +11,6 @@ permissions: {}
 jobs:
   release-please-guard:
     runs-on: ubuntu-latest
-    if: startsWith(github.head_ref, 'release-please--') != true
     permissions:
       contents: read
     steps:
@@ -20,7 +19,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           BASE_BRANCH: ${{ github.base_ref }}
+          HEAD_BRANCH: ${{ github.head_ref }}
         run: |-
+          if [[ "$HEAD_BRANCH" == release-please--* ]]; then
+            echo "Release-please PR — skipping guard."
+            exit 0
+          fi
           VERSION=$(gh api "repos/$GH_REPO/contents/pom.xml?ref=$BASE_BRANCH" \
             --jq '.content' | base64 -d | \
             awk '/<parent>/{p=1} /<\/parent>/{p=0;next} !p && /<version>/{gsub(/.*<version>|<\/version>.*/,""); print; exit}')
