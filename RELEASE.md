@@ -17,7 +17,7 @@ Releases within our project are exclusively overseen by designated code owners, 
 
 ### Branch Protection
 
-The [`release-please-guard`](/.github/workflows/release-please-guard.yml) workflow prevents PRs from merging while a release-please snapshot PR is pending. This ensures the snapshot version bump lands immediately after the release, avoiding misordered commits on the target branch. To enforce this, add `release-please-guard` as a required status check in your branch protection rules for `main` and any `release-v*` branches, and enable "Require branches to be up to date before merging" (or use a merge queue). This ensures PRs that previously passed the guard are rechecked when a release-please PR is opened.
+The [`release-please-guard`](/.github/workflows/release-please-guard.yml) workflow prevents PRs from merging while a release-please snapshot PR is pending. This ensures the snapshot version bump lands immediately after the release, avoiding misordered commits on the target branch. To enforce this, add `release-please-guard` as a required status check in your branch protection rules for `main` and any `release-v*` branches, and enable "Require branches to be up to date before merging". This ensures PRs that previously passed the guard are rechecked when a release-please PR is opened.
 
 For comprehensive information, please consult the [Release Please documentation](https://github.com/googleapis/release-please).
 

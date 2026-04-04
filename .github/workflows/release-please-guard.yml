@@ -1,13 +1,12 @@
 ---
 # Blocks PR merges while a release-please snapshot PR is pending.
 # This prevents commits from landing between the release and the snapshot version bump.
-# Add the "release-please-guard" status check as required in branch protection rules,
-# and either enable a merge queue or require branches to be up to date before merging.
+# Add the "release-please-guard" status check as required in branch protection rules
+# and enable "Require branches to be up to date before merging".
 name: release-please-guard
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-  merge_group:
 permissions: {}
 jobs:
   release-please-guard:
@@ -20,7 +19,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          BASE_BRANCH: ${{ github.event_name == 'merge_group' && github.event.merge_group.base_ref || github.base_ref }}
+          BASE_BRANCH: ${{ github.base_ref }}
         run: |-
           VERSION=$(gh api "repos/$GH_REPO/contents/pom.xml?ref=$BASE_BRANCH" \
             --jq '.content' | base64 -d | \
