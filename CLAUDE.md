@@ -11,3 +11,4 @@
 - **Logging**: Polarion logs: `<POLARION_HOME>/polarion/logs/main/*.log`
 - **Branch conventions**: Conventional commits enforced by commitizen (pre-commit hook). Feature branches: `feature/<name>`, bug fixes: `fix/<name>`, LTS branches: `release-v*` (e.g., `release-v6`).
 - **Pre-commit hooks block internal patterns**: some org-specific identifiers are treated as secrets. Run `pre-commit run -a` after implementation.
+- **Reusable workflow caller permissions**: When calling reusable workflows from `github-workflows-polarion`, the caller must grant all permissions the reusable workflow's job declares. The reusable workflow can only restrict, never escalate beyond what the caller passes. Always check the reusable workflow's job-level `permissions:` and mirror them in the caller.
