@@ -26,6 +26,27 @@
         ]
       }
     },
+    "/api/hello": {
+      "get": {
+        "operationId": "hello",
+        "responses": {
+          "default": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "default response"
+          }
+        },
+        "summary": "Returns a greeting message",
+        "tags": [
+          "Extension Name"
+        ]
+      }
+    },
     "/api/version": {
       "get": {
         "operationId": "getVersion",
