@@ -53,15 +53,17 @@ The `release-v*` pattern in the workflow automatically recognizes new LTS branch
 
 ### Deployment Matrix
 
-| Branch | Version Type | Maven Central | GitHub Packages | GitHub Release |
-|--------|--------------|---------------|-----------------|----------------|
+| Branch | Version Type | Maven Central | JFrog Artifactory | GitHub Release |
+|--------|--------------|---------------|-------------------|----------------|
 | `main` | SNAPSHOT | - | ✓ | - |
-| `main` | Release | ✓ | - | ✓ |
+| `main` | Release | ✓ (public) | ✓ (private only) | ✓ |
 | `release-v*` | SNAPSHOT | - | - | - |
-| `release-v*` | Release | ✓ | - | ✓ |
+| `release-v*` | Release | ✓ (public) | ✓ (private only) | ✓ |
 
 ### Notes
 
-- SNAPSHOT versions from LTS branches are NOT deployed to GitHub Packages
+- SNAPSHOTs are published to JFrog Artifactory (`sbb.jfrog.io/artifactory/polarion-mvn`); publishing to GitHub Packages was removed
+- Releases go to Maven Central for public repositories, or to JFrog Artifactory for private repositories
+- SNAPSHOT versions from LTS branches are NOT deployed anywhere
 - Only release versions from LTS branches are deployed to Maven Central
 - Each LTS branch operates independently with its own release PR
