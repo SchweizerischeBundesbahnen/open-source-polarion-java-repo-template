@@ -5,6 +5,12 @@ A React + Vite single-page app on [react-sbb-polarion](https://github.com/grigor
 server-rendered About page. The whole page comes from RSP's shared `About` component; this app only
 feeds it the extension's REST hook, icon and REST-API URL.
 
+> **Replace `src/assets/app-icon.svg`.** It ships as the neutral SBB card - the red header band and no
+> product glyph - which is what an extension without an icon of its own uses. It is a binary asset, so
+> the search-and-replace that turns this template into a real extension does not touch it, and the only
+> test that looks at it just asserts that an `.app-icon` element exists. After replacing it, regenerate
+> the About reference screenshot: `npm run test:update:docker`.
+
 ## Feature routing
 
 There is one `index.html` / bundle. The page to render is chosen from the `feature` query parameter:
