@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module id="ch.sbb.polarion.extension.extension_name" version="1.0.0">
+
+    <!-- The administration-menu entries. Every page of the React app gets one extender here, and its
+         `feature` query parameter MUST match an id in ui/src/features.tsx - a typo is a blank page in
+         Polarion and no test catches it. `embedded=true` tells the app it is inside Polarion's iframe;
+         `$scope$` is substituted by Polarion with the project or global scope.
+
+         The REST API entry is not a page: it opens the generated Swagger UI in the REST webapp. -->
+    <contribution configuration-id="com.polarion.xray.webui.administrationPageExtenders">
+        <extender id="about"
+                  name="About"
+                  parentNodeId="extension-name"
+                  parentNodeName="Extension Name"
+                  parentNodeIconUrl="/polarion/extension-name-app/ui/images/menu/30x30/_parent.svg"
+                  iconUrl="/polarion/extension-name-app/ui/images/menu/16x16/about.svg"
+                  pageUrl="/polarion/extension-name-app/ui/app/index.html?feature=about&amp;embedded=true&amp;scope=$scope$"
+                  projectScope="true"
+                  projectGroupScope="false"
+                  repositoryScope="true"/>
+
+        <extender id="rest-api"
+                  name="REST API"
+                  parentNodeId="extension-name"
+                  iconUrl="/polarion/extension-name-app/ui/images/menu/16x16/rest_api.svg"
+                  pageUrl="/polarion/extension-name/rest/swagger"
+                  projectScope="true"
+                  projectGroupScope="false"
+                  repositoryScope="true"/>
+    </contribution>
+
+</module>

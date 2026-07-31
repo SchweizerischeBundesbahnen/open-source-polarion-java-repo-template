@@ -56,9 +56,10 @@ The project follows a standard Maven directory structure:
 │   │   ├── java/           # Java source files
 │   │   │   └── ch/sbb/polarion/extension/
 │   │   └── resources/      # Resources like configuration files
-│   │       ├── META-INF/
-│   │       └── webapp/     # Web resources
+│   │       ├── META-INF/   # hivemodule.xml - the administration-menu entries
+│   │       └── webapp/     # Two contexts: <ext> (REST) and <ext>-app (the React bundle)
 │   └── test/               # Test sources
+├── ui/                     # The React admin app (Vite + react-sbb-polarion); see ui/README.md
 ├── docs/                   # Documentation
 ├── LICENSE                 # Apache License 2.0
 ├── NOTICE                  # Copyright attribution
@@ -94,7 +95,8 @@ mvn clean verify
 
 ### Running Tests
 
-The project uses JUnit for testing. Run tests with:
+The project uses JUnit for the Java side and Vitest (browser mode) for the `ui/` React app. Both run
+in the Maven `test` phase, so a plain build exercises everything:
 
 ```bash
 mvn test
@@ -108,7 +110,28 @@ Code coverage reports can be generated with:
 mvn verify
 ```
 
-The reports will be available in `target/site/jacoco`.
+The Java reports land in `target/site/jacoco`; the UI report in `ui/coverage`. The UI run enforces an
+80% istanbul threshold on all four metrics and fails the build below it.
+
+### The UI tests need Docker
+
+The `ui/` suite runs inside the pinned Playwright image, because the visual-regression references are
+pixel-locked to it. Docker must be running for a default `mvn verify`. The flags below tune that; all
+of them come from the generic parent, so every extension understands the same set:
+
+| Flag | Effect |
+| --- | --- |
+| `-DskipJsTests` | Skip the UI suite entirely. The rest of the build is unaffected. |
+| `-DjsTestsNoDocker` | Run the suite on the host browser instead of in the image. The visual assertions skip themselves (they would fail on the host's font metrics), the behaviour tests and the coverage gate still run. |
+| `-DskipVisualJsTests` | Exclude the `*.visual.test.tsx` files from the run. Rarely needed - they already skip themselves outside the reference image. |
+| `-DinstallPlaywright` | Have the build download the Playwright browsers (`--with-deps`). Needed once on a machine that runs the suite outside Docker. |
+| `-DinstallPlaywrightNoDeps` | The same without the OS packages, for an agent where installing them needs root. |
+
+Regenerating a visual reference is a deliberate act and only valid inside the image:
+
+```bash
+npm --prefix ui run test:update:docker
+```
 
 ## Debugging
 
