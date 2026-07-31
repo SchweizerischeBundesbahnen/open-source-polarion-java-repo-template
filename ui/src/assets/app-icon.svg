@@ -1,0 +1,22 @@
+<!--
+  Placeholder application icon, shown by the About page.
+
+  REPLACE IT with the extension's own icon. It is a binary asset, so the search-and-replace over the
+  identifiers that turns this template into a real extension will not touch it - which is exactly how
+  five extensions ended up shipping another extension's icon, unnoticed by every behaviour test (they
+  only assert that an `.app-icon` element exists). Regenerate the About reference screenshot afterwards
+  with `npm run test:update:docker`.
+
+  Deliberately anonymous: an empty plug-in outline on the Polarion admin background.
+-->
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="4" y="2" width="72" height="72" rx="8" fill="#f4f5f7" stroke="#c9c9c9" stroke-width="2" />
+  <path
+    d="M32 22h6a4 4 0 0 1 8 0h6a2 2 0 0 1 2 2v10a4 4 0 0 1 0 8v10a2 2 0 0 1-2 2H32a2 2 0 0 1-2-2V44a4 4 0 0 0 0-8V24a2 2 0 0 1 2-2Z"
+    fill="#ffffff"
+    stroke="#7c7c7c"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+  <text x="40" y="68" text-anchor="middle" font-family="'Segoe UI', 'Open Sans', Arial, sans-serif" font-size="8" fill="#7c7c7c">replace me</text>
+</svg>
