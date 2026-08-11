@@ -1,6 +1,6 @@
 # Extension Name UI
 
-A React + Vite single-page app on [react-sbb-polarion](https://github.com/grigoriev/react-sbb-polarion)
+A React + Vite single-page app on [react-sbb-polarion](https://github.com/SchweizerischeBundesbahnen/react-sbb-polarion)
 (RSP). It replaces the legacy `about.jsp`, which was a two-line wrapper around generic's
 server-rendered About page. The whole page comes from RSP's shared `About` component; this app only
 feeds it the extension's REST hook, icon and REST-API URL.
