@@ -49,12 +49,10 @@
 
         <web.app.name>${maven-jar-plugin.Extension-Context}</web.app.name>
 
-        <!-- README.md -> about.html conversion. The parent defaults to failOnError=false so a local
-             build without a GITHUB_TOKEN stays lenient; CI sets the environment variable to true, and a
-             broken conversion then fails the build instead of shipping an empty About page. Unset, the
-             property does not resolve to a boolean and the plugin reads it as false. -->
-        <!--suppress UnresolvedMavenProperty -->
-        <markdown2html-maven-plugin.failOnError>${env.MARKDOWN2HTML_MAVEN_PLUGIN_FAIL_ON_ERROR}</markdown2html-maven-plugin.failOnError>
+        <!-- A broken README.md -> about.html conversion fails the build instead of shipping an
+             empty About page. markdown2html renders locally since 1.7.x - no GitHub API, no token -
+             so the same setting is right in CI, in a deploy job and on a developer machine. -->
+        <markdown2html-maven-plugin.failOnError>true</markdown2html-maven-plugin.failOnError>
     </properties>
 
     <dependencies>
@@ -134,12 +132,9 @@
                 <artifactId>swagger-maven-plugin-jakarta</artifactId>
                 <configuration>
                     <outputFormat>JSON</outputFormat>
-                    <!-- Stable ordering, so a rebuild does not reshuffle docs/openapi.json into a diff
-                         that says nothing. -->
-                    <sortOutput>true</sortOutput>
                     <resourcePackages>
                         <!-- `info` backs the About page (/version, /configuration-properties,
-                             /configuration-status, /readme, /user-guide). Uncomment `roles` when the
+                             /configuration-status, /readme, /user-guide, /disclaimer). Uncomment `roles` when the
                              extension adds RSP's Authorization page, and `settings` when it gets its
                              first named setting. -->
                         <package>ch.sbb.polarion.extension.generic.rest.controller.info</package>
