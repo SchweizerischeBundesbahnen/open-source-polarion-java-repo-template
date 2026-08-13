@@ -136,9 +136,6 @@
                 <artifactId>swagger-maven-plugin-jakarta</artifactId>
                 <configuration>
                     <outputFormat>JSON</outputFormat>
-                    <!-- Stable ordering, so a rebuild does not reshuffle docs/openapi.json into a diff
-                         that says nothing. -->
-                    <sortOutput>true</sortOutput>
                     <resourcePackages>
                         <!-- `info` backs the About page (/version, /configuration-properties,
                              /configuration-status, /readme, /user-guide). Uncomment `roles` when the
