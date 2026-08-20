@@ -21,7 +21,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@sbb-polarion/react-sbb-polarion": "^1.0.0",
+    "@sbb-polarion/react-sbb-polarion": "^2.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
