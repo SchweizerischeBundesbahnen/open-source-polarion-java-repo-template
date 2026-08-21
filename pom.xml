@@ -5,7 +5,7 @@
     <parent>
         <groupId>ch.sbb.polarion.extensions</groupId>
         <artifactId>ch.sbb.polarion.extension.generic</artifactId>
-        <version>15.10.0</version>
+        <version>15.11.0</version>
     </parent>
 
     <artifactId>ch.sbb.polarion.extension.extension-name</artifactId>
@@ -48,6 +48,11 @@
         <maven-jar-plugin.Automatic-Module-Name>ch.sbb.polarion.extension.extension_name</maven-jar-plugin.Automatic-Module-Name>
 
         <web.app.name>${maven-jar-plugin.Extension-Context}</web.app.name>
+
+        <!-- A broken README.md -> about.html conversion fails the build instead of shipping an
+             empty About page. markdown2html renders locally since 1.7.x - no GitHub API, no token -
+             so the same setting is right in CI, in a deploy job and on a developer machine. -->
+        <markdown2html-maven-plugin.failOnError>true</markdown2html-maven-plugin.failOnError>
     </properties>
 
     <dependencies>
@@ -55,6 +60,19 @@
             <groupId>ch.sbb.polarion.extensions</groupId>
             <artifactId>ch.sbb.polarion.extension.generic.app</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+
+        <!-- generic's test helpers: CurrentContextExtension / CurrentContextConfig (the JUnit extension
+             that gives a test a Polarion context) and the REST test bases. Every extension with real
+             tests depends on it. Note when building generic from source: `-DskipTests` still packages
+             this test-jar, `-Dmaven.test.skip=true` does not, and the consumer build then fails
+             resolving it. -->
+        <dependency>
+            <groupId>ch.sbb.polarion.extensions</groupId>
+            <artifactId>ch.sbb.polarion.extension.generic.app</artifactId>
+            <version>${project.parent.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -100,13 +118,27 @@
                 <artifactId>maven-source-plugin</artifactId>
             </plugin>
 
+            <!-- Re-formats the docs/openapi.json that swagger-maven-plugin-jakarta writes, by running the
+                 same pre-commit hooks that guard it, so the generated file matches the committed one and
+                 a build never leaves a formatting-only diff behind. Version and execution come from the
+                 generic parent. -->
+            <plugin>
+                <groupId>io.github.grigoriev</groupId>
+                <artifactId>pre-commit-run-maven-plugin</artifactId>
+            </plugin>
+
             <plugin>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-maven-plugin-jakarta</artifactId>
                 <configuration>
                     <outputFormat>JSON</outputFormat>
                     <resourcePackages>
+                        <!-- `info` backs the About page (/version, /configuration-properties,
+                             /configuration-status, /readme, /user-guide, /disclaimer). Uncomment `roles` when the
+                             extension adds RSP's Authorization page, and `settings` when it gets its
+                             first named setting. -->
                         <package>ch.sbb.polarion.extension.generic.rest.controller.info</package>
+<!--                        <package>ch.sbb.polarion.extension.generic.rest.controller.roles</package>-->
 <!--                        <package>ch.sbb.polarion.extension.generic.rest.controller.settings</package>-->
                         <package>ch.sbb.polarion.extension.generic.rest.model</package>
                         <package>ch.sbb.polarion.extension.extension_name.rest.controller</package>

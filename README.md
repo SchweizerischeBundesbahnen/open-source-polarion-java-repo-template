@@ -16,6 +16,7 @@ This Polarion extension provides possibility to <...>
 ## Documentation
 
 - [Development Guide](./DEVELOPMENT.md) - Comprehensive guide for setting up development environment and contributing to this project
+- [UI Guide](./ui/README.md) - The React administration app: feature routing, local development, and the two test layers
 - [Contributing Guidelines](./CONTRIBUTING.md) - Guidelines for contributing to this project
 - [Coding Standards](./CODING_STANDARDS.md) - Coding standards and best practices
 - [Release Process](./RELEASE.md) - Information about the release process
