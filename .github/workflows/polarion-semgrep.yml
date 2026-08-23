@@ -1,0 +1,19 @@
+---
+name: Polarion Semgrep
+on:
+  push:
+    branches: [main, release-v*]
+  pull_request:
+    branches: [main, release-v*]
+    types: [opened, synchronize, reopened, ready_for_review]
+  schedule:
+    # Weekly, off-peak Sunday — twenty minutes after the CodeQL run.
+    - cron: 37 5 * * 0
+permissions: {}
+jobs:
+  semgrep:
+    uses: SchweizerischeBundesbahnen/github-workflows-polarion/.github/workflows/reusable-polarion-semgrep.yml@main
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
