@@ -51,7 +51,25 @@ export default defineConfig({
       enabled: true,
       // deviceScaleFactor: 2 -> all visual-regression references are captured at 2x (sharper, and finer
       // diffs). Set on the provider's contextOptions (not the instance - the provider reads it there).
-      provider: playwright({ contextOptions: { deviceScaleFactor: 2 } }),
+      // The window (contextOptions.viewport) is deliberately larger than every viewport a test asks for, so
+      // that no reference is captured through a downscale. A test viewport is the size of the iframe the
+      // file runs in, and Vitest fits that iframe into the window by scaling it:
+      // `scale = min(1, container.width / requested.width, container.height / requested.height)`. Raise this
+      // window before adding a reference that wants a taller or wider viewport, or that one is resampled on
+      // the way out. The width is free - nothing asks for more than 1280 and the scale caps at 1 - so it is
+      // the familiar full-HD number; the height is the binding one.
+      //
+      // `--disable-lcd-text` asks for grayscale antialiasing, and
+      // `--disable-font-subpixel-positioning` puts every glyph on a whole pixel, and that is what makes the
+      // references reproducible. Without it Chromium places a glyph on the subpixel its layout lands on and
+      // picks the phase to rasterize it at from what it has already drawn in the same browser, so a
+      // reference agrees with the runs that had the same files ahead of it and with no others.
+      provider: playwright({
+        contextOptions: { deviceScaleFactor: 2, viewport: { width: 1920, height: 2200 } },
+        launchOptions: {
+          args: ['--disable-font-subpixel-positioning', '--disable-lcd-text'],
+        },
+      }),
       headless: true,
       instances: [{ browser: 'chromium', viewport: { width: 1280, height: 720 } }],
       expect: {
