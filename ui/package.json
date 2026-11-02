@@ -21,7 +21,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@sbb-polarion/react-sbb-polarion": "^2.0.2",
+    "@sbb-polarion/react-sbb-polarion": "^3.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -54,5 +54,8 @@
   "packageManager": "npm@12.2.1",
   "allowScripts": {
     "esbuild": true
+  },
+  "overrides": {
+    "minimatch": "^11.0.1"
   }
 }
