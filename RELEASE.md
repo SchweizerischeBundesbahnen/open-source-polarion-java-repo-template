@@ -49,21 +49,38 @@ The `release-v*` pattern in the workflow automatically recognizes new LTS branch
 3. Merge the release PR - this triggers:
    - Tag creation (e.g., `v6.4.3`)
    - GitHub Release with artifacts
-   - Maven Central deployment
+   - Deployment to JFrog Artifactory
 
 ### Deployment Matrix
 
-| Branch | Version Type | Maven Central | JFrog Artifactory | GitHub Release |
-|--------|--------------|---------------|-------------------|----------------|
-| `main` | SNAPSHOT | - | ✓ | - |
-| `main` | Release | ✓ (public) | ✓ (private only) | ✓ |
-| `release-v*` | SNAPSHOT | - | - | - |
-| `release-v*` | Release | ✓ (public) | ✓ (private only) | ✓ |
+| Branch | Version Type | JFrog Artifactory | GitHub Release |
+|--------|--------------|-------------------|----------------|
+| `main` | SNAPSHOT | ✓ | - |
+| `main` | Release | ✓ | ✓ |
+| `release-v*` | SNAPSHOT | - | - |
+| `release-v*` | Release | ✓ | ✓ |
 
 ### Notes
 
-- SNAPSHOTs are published to JFrog Artifactory (`sbb.jfrog.io/artifactory/polarion-mvn`); publishing to GitHub Packages was removed
-- Releases go to Maven Central for public repositories, or to JFrog Artifactory for private repositories
+- Public repositories publish releases and SNAPSHOTs to the public JFrog Artifactory repository `https://sbb.jfrog.io/artifactory/polarion-opensource-mvn`, which can be read without authentication. They are GPG-signed (`.asc`) with the same key that was used for Maven Central
+- Private repositories publish releases and SNAPSHOTs to the private JFrog Artifactory repository `sbb.jfrog.io/artifactory/polarion-mvn`
+- Releases are no longer published to Maven Central; versions published there earlier remain available
 - SNAPSHOT versions from LTS branches are NOT deployed anywhere
-- Only release versions from LTS branches are deployed to Maven Central
 - Each LTS branch operates independently with its own release PR
+
+### Consuming Published Artifacts
+
+Releases and SNAPSHOTs of public repositories are resolved from the public JFrog Artifactory repository. Add it to the `<repositories>` section of your `pom.xml`, or of an active `<profile>` in your `settings.xml` (as `.mvn/settings.xml` does):
+
+```xml
+<repository>
+    <id>polarion-opensource</id>
+    <url>https://sbb.jfrog.io/artifactory/polarion-opensource-mvn</url>
+    <releases>
+        <enabled>true</enabled>
+    </releases>
+    <snapshots>
+        <enabled>true</enabled>
+    </snapshots>
+</repository>
+```

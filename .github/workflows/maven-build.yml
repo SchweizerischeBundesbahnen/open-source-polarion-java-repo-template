@@ -97,58 +97,27 @@ jobs:
             target/*.pom
           retention-days: 1
           if-no-files-found: error
-  # Deploy releases to Maven Central from main and LTS branches (release-v*)
-  # See RELEASE.md for LTS branch documentation
-  deploy-maven-central:
-    needs: build
-    if: ${{ needs.build.outputs.is_release == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release-v')) }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    env:
-      COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_USERNAME }}
-      COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_TOKEN }}
-      COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE }}
-      GITHUB_TOKEN: ${{ github.token }}  # Providing this prevents reaching the GitHub request limits
-    steps:
-      - name: 📄 Checkout the repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
-        with:
-          fetch-depth: 1
-          persist-credentials: false
-      - name: 🧱 Set up JDK and Maven with cache
-        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880  # v6.3.0
-        with:
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-          java-version: ${{ env.JAVA_VERSION }}
-          cache: maven
-          gpg-private-key: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY }}
-      - name: 📦 Deploy to Maven Central
-        # This cannot be implemented using deploy:deploy-file
-        # The central-publishing-maven-plugin must be used instead due to specific deployment requirements
-        # Additionally, timeouts are set to 1 hour to avoid issues with the connection to Sonatype Central during deployment
-        run: |
-          mvn --batch-mode -s "${SETTINGS_XML}" clean deploy \
-            -Dmaven.test.skip=true \
-            -P gpg-sign \
-            -P central-publishing \
-            -Dcentral.timeout=3600 \
-            -Dmaven.wagon.http.connectionTimeout=3600000 \
-            -Dmaven.wagon.http.readTimeout=3600000 \
-            -Dcentral-publishing-maven-plugin.autoPublish=${{ github.event.repository.visibility == 'public' }}
-  # Publish to JFrog Artifactory (sbb.jfrog.io/artifactory/polarion-mvn).
-  # SNAPSHOTs from main always; releases only when the repo is private (public
-  # releases go to Maven Central, see deploy-maven-central). Reuses the artifact
-  # built by the build job via deploy:deploy-file (no rebuild).
+  # Publish to JFrog Artifactory: SNAPSHOTs from main, releases from main and LTS
+  # branches (release-v*). Public repositories deploy to the public repository
+  # sbb.jfrog.io/artifactory/polarion-opensource-mvn (anonymous read, releases and
+  # SNAPSHOTs); private repositories deploy to the private polarion-mvn.
+  # Reuses the artifacts built by the build job (no rebuild): deploy:deploy-file for
+  # private repositories, gpg:sign-and-deploy-file for public ones. The template
+  # repository itself never deploys its placeholder artifact.
   deploy-jfrog-io:
     needs: build
-    if: ${{ github.ref == 'refs/heads/main' || (needs.build.outputs.is_release == 'true' && startsWith(github.ref, 'refs/heads/release-v')) }}
+    if: ${{ github.event.repository.is_template != true && (github.ref == 'refs/heads/main' || (needs.build.outputs.is_release == 'true' && startsWith(github.ref, 'refs/heads/release-v'))) }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
     env:
       IO_JFROG_SBB_POLARION_TOKEN: ${{ secrets.IO_JFROG_SBB_POLARION_TOKEN }}
       PROJECT_VERSION: ${{ needs.build.outputs.project_version }}
+      # Never publish a private repository's artifacts to the public repository
+      DEPLOY_URL: ${{ github.event.repository.visibility == 'public' && 'https://sbb.jfrog.io/artifactory/polarion-opensource-mvn' || 'https://sbb.jfrog.io/artifactory/polarion-mvn' }}
+      # Public artifacts are GPG-signed with the same key as formerly on Maven Central
+      DEPLOY_GOAL: ${{ github.event.repository.visibility == 'public' && 'gpg:sign-and-deploy-file' || 'deploy:deploy-file' }}
+      COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE: ${{ github.event.repository.visibility == 'public' && secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE || '' }}
     steps:
       - name: 📄 Checkout the repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
@@ -167,20 +136,32 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
+          gpg-private-key: ${{ github.event.repository.visibility == 'public' && secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PRIVATE_KEY || '' }}
       - name: 📦 Deploy to JFrog Artifactory
-        # SNAPSHOTs always; releases only when the repo is private (public releases
-        # go to Maven Central). Main JAR + POM only — sources/javadoc are produced
-        # only for Maven Central releases.
-        if: ${{ needs.build.outputs.is_release == 'false' || github.event.repository.visibility == 'private' }}
+        # Main JAR, sources JAR, javadoc JAR and POM (plus .asc signatures for public repositories)
         run: |
+          # A public release is immutable: skip when it is already published, which happens
+          # on every push to main until the version is bumped back to a SNAPSHOT
+          if [[ "${DEPLOY_URL}" == */polarion-opensource-mvn && "${PROJECT_VERSION}" != *-SNAPSHOT ]]; then
+            group_path=$(mvn --batch-mode -q -s "${SETTINGS_XML}" help:evaluate -Dexpression=project.groupId -DforceStdout | tr . /)
+            artifact_id=$(mvn --batch-mode -q -s "${SETTINGS_XML}" help:evaluate -Dexpression=project.artifactId -DforceStdout)
+            if curl -sfI -o /dev/null "${DEPLOY_URL}/${group_path}/${artifact_id}/${PROJECT_VERSION}/${artifact_id}-${PROJECT_VERSION}.pom"; then
+              echo "::notice::${artifact_id} ${PROJECT_VERSION} is already published; skipping the deploy"
+              exit 0
+            fi
+          fi
           jar=(target/*-"${PROJECT_VERSION}".jar)
-          mvn --batch-mode -s "${SETTINGS_XML}" deploy:deploy-file \
+          sources=(target/*-"${PROJECT_VERSION}"-sources.jar)
+          javadoc=(target/*-"${PROJECT_VERSION}"-javadoc.jar)
+          mvn --batch-mode -s "${SETTINGS_XML}" "${DEPLOY_GOAL}" \
             -DrepositoryId=jfrog_io \
-            -Durl=https://sbb.jfrog.io/artifactory/polarion-mvn \
+            -Durl="${DEPLOY_URL}" \
             -DpomFile=pom.xml \
-            -Dfile="${jar[0]}"
-  # Attach the built JAR to the GitHub Release page. Releases are published to Maven
-  # Central (public repos) or JFrog Artifactory (private repos); SNAPSHOTs go to JFrog.
+            -Dfile="${jar[0]}" \
+            -Dsources="${sources[0]}" \
+            -Djavadoc="${javadoc[0]}"
+  # Attach the built JAR to the GitHub Release page. Releases and SNAPSHOTs are
+  # published to JFrog Artifactory (see deploy-jfrog-io).
   upload-release-assets:
     needs: build
     if: ${{ needs.build.outputs.is_release == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release-v')) }}
