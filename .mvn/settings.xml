@@ -7,6 +7,20 @@
         <profile>
             <id>jfrog</id>
             <repositories>
+                <!-- Public, no credentials: releases of generic (the parent POM) and of the open-source extensions -->
+                <repository>
+                    <id>polarion-opensource</id>
+                    <name>sbb.jfrog.io/artifactory/polarion-opensource-mvn</name>
+                    <url>https://sbb.jfrog.io/artifactory/polarion-opensource-mvn</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
+                </repository>
                 <repository>
                     <id>jfrog_io</id>
                     <name>sbb.jfrog.io/artifactory/polarion-mvn</name>
