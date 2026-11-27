@@ -36,6 +36,10 @@
                 </httpHeaders>
             </configuration>
         </server>
+        <server>
+            <id>gpg.passphrase</id>
+            <passphrase>${env.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE}</passphrase>
+        </server>
     </servers>
     <mirrors/>
     <pluginGroups/>

@@ -62,7 +62,7 @@ The `release-v*` pattern in the workflow automatically recognizes new LTS branch
 
 ### Notes
 
-- Public repositories publish releases and SNAPSHOTs to the public JFrog Artifactory repository `https://sbb.jfrog.io/artifactory/polarion-opensource-mvn`, which can be read without authentication
+- Public repositories publish releases and SNAPSHOTs to the public JFrog Artifactory repository `https://sbb.jfrog.io/artifactory/polarion-opensource-mvn`, which can be read without authentication. They are GPG-signed (`.asc`) with the same key that was used for Maven Central
 - Private repositories publish releases and SNAPSHOTs to the private JFrog Artifactory repository `sbb.jfrog.io/artifactory/polarion-mvn`
 - Releases are no longer published to Maven Central; versions published there earlier remain available
 - SNAPSHOT versions from LTS branches are NOT deployed anywhere
