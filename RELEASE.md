@@ -70,7 +70,7 @@ The `release-v*` pattern in the workflow automatically recognizes new LTS branch
 
 ### Consuming Published Artifacts
 
-Releases and SNAPSHOTs of public repositories are resolved from the public JFrog Artifactory repository. Add it to the `<repositories>` section of your `pom.xml` or `settings.xml`:
+Releases and SNAPSHOTs of public repositories are resolved from the public JFrog Artifactory repository. Add it to the `<repositories>` section of your `pom.xml`, or of an active `<profile>` in your `settings.xml` (as `.mvn/settings.xml` does):
 
 ```xml
 <repository>

@@ -101,10 +101,12 @@ jobs:
   # branches (release-v*). Public repositories deploy to the public repository
   # sbb.jfrog.io/artifactory/polarion-opensource-mvn (anonymous read, releases and
   # SNAPSHOTs); private repositories deploy to the private polarion-mvn.
-  # Reuses the artifacts built by the build job via deploy:deploy-file (no rebuild).
+  # Reuses the artifacts built by the build job (no rebuild): deploy:deploy-file for
+  # private repositories, gpg:sign-and-deploy-file for public ones. The template
+  # repository itself never deploys its placeholder artifact.
   deploy-jfrog-io:
     needs: build
-    if: ${{ github.ref == 'refs/heads/main' || (needs.build.outputs.is_release == 'true' && startsWith(github.ref, 'refs/heads/release-v')) }}
+    if: ${{ github.event.repository.is_template != true && (github.ref == 'refs/heads/main' || (needs.build.outputs.is_release == 'true' && startsWith(github.ref, 'refs/heads/release-v'))) }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -115,7 +117,7 @@ jobs:
       DEPLOY_URL: ${{ github.event.repository.visibility == 'public' && 'https://sbb.jfrog.io/artifactory/polarion-opensource-mvn' || 'https://sbb.jfrog.io/artifactory/polarion-mvn' }}
       # Public artifacts are GPG-signed with the same key as formerly on Maven Central
       DEPLOY_GOAL: ${{ github.event.repository.visibility == 'public' && 'gpg:sign-and-deploy-file' || 'deploy:deploy-file' }}
-      COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE: ${{ secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE }}
+      COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE: ${{ github.event.repository.visibility == 'public' && secrets.COM_SONATYPE_CENTRAL_POLARION_OPENSOURCE_GPG_PASSPHRASE || '' }}
     steps:
       - name: 📄 Checkout the repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
@@ -138,6 +140,16 @@ jobs:
       - name: 📦 Deploy to JFrog Artifactory
         # Main JAR, sources JAR, javadoc JAR and POM (plus .asc signatures for public repositories)
         run: |
+          # A public release is immutable: skip when it is already published, which happens
+          # on every push to main until the version is bumped back to a SNAPSHOT
+          if [[ "${DEPLOY_URL}" == */polarion-opensource-mvn && "${PROJECT_VERSION}" != *-SNAPSHOT ]]; then
+            group_path=$(mvn --batch-mode -q -s "${SETTINGS_XML}" help:evaluate -Dexpression=project.groupId -DforceStdout | tr . /)
+            artifact_id=$(mvn --batch-mode -q -s "${SETTINGS_XML}" help:evaluate -Dexpression=project.artifactId -DforceStdout)
+            if curl -sfI -o /dev/null "${DEPLOY_URL}/${group_path}/${artifact_id}/${PROJECT_VERSION}/${artifact_id}-${PROJECT_VERSION}.pom"; then
+              echo "::notice::${artifact_id} ${PROJECT_VERSION} is already published; skipping the deploy"
+              exit 0
+            fi
+          fi
           jar=(target/*-"${PROJECT_VERSION}".jar)
           sources=(target/*-"${PROJECT_VERSION}"-sources.jar)
           javadoc=(target/*-"${PROJECT_VERSION}"-javadoc.jar)
